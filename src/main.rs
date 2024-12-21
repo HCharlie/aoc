@@ -72,6 +72,7 @@ fn main() {
         18 => days::day18::run(day, level, debug),
         19 => days::day19::run(day, level, debug),
         20 => days::day20::run(day, level, debug),
+        21 => days::day21::run(day, level, debug),
         // Add other days here
         _ => eprintln!("Invalid day or level specified! Usage: day level debug"),
     }
