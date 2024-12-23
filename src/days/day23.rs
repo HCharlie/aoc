@@ -1,8 +1,6 @@
-use rustworkx_core::graph_ext::contraction;
-
 use super::utils::{get_input_content, submit_check_answer};
 use crate::Level;
-use std::{collections::{HashMap, HashSet}, error::Error, vec};
+use std::{collections::{HashMap, HashSet}, error::Error};
 
 
 fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
@@ -42,7 +40,7 @@ fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
 }
 
 
-fn _search<'a>(node: &str, req: &mut Vec<&'a str>, seen: &mut HashSet<Vec<&'a str>>, conns: &HashMap<&str, HashSet<&'a str>>) -> () {
+fn _search(node: &str, req: &mut Vec<String>, seen: &mut HashSet<Vec<String>>, conns: &HashMap<&str, HashSet<&str>>) -> () {
     let mut key = req.clone();
     key.sort();
     if seen.contains(&key) {
@@ -51,18 +49,18 @@ fn _search<'a>(node: &str, req: &mut Vec<&'a str>, seen: &mut HashSet<Vec<&'a st
     seen.insert(key);
     if let Some(neighbors) = conns.get(node) {
         for &neighbor in neighbors {
-            if req.contains(&neighbor) {
+            if req.contains(&neighbor.to_string()) {
                 continue;
             }
             
-            let req_set: HashSet<_> = req.iter().copied().collect();
+            let req_set: HashSet<_> = req.iter().map(|x| x.as_str()).collect();
             match conns.get(neighbor) {
                 Some(n) if req_set.is_subset(n) => (),
                 _ => continue,
             };
 
             let mut new_req = req.clone();
-            new_req.push(neighbor);
+            new_req.push(neighbor.to_string());
             _search(neighbor, &mut new_req, seen, conns);
         }
     }
@@ -81,12 +79,10 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
     let mut seen = HashSet::new();
 
     for (&k, _) in m.iter() {
-        let mut req = vec![k];
+        let mut req = vec![k.to_string()];
         _search(k, &mut req, &mut seen, &m);
     }
-    let mut longest: Vec<&str> = seen.iter()
-        .max_by_key(|&x| x.len())
-        .map_or_else(|| Vec::new(), |x| x.clone());
+    let mut longest: Vec<String> = seen.iter().max_by_key(|&x| x.len()).ok_or("No solution found")?.clone();
     longest.sort();
     Ok(longest.join(","))
 }
