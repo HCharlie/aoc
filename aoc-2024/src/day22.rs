@@ -1,7 +1,11 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::{collections::HashMap, error::Error};
+use anyhow::Result;
+use std::{collections::HashMap};
 use std::collections::VecDeque;
+
+pub const EXAMPLE_INPUT: &str = "1
+2
+3
+2024";
 
 fn _mix(num: &i64, secret: &i64) -> i64 {
     *num ^ *secret
@@ -30,7 +34,7 @@ fn _cal(num: &i64, it: &i64) -> i64 {
     secret
 }
 
-fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<String> {
     let nums = input_text.lines()
         .map(|line| line.parse::<i64>())
         .collect::<Result<Vec<i64>, _>>()?;
@@ -82,7 +86,7 @@ fn _collect_seqs_map(num: &i64, it: &i64) -> HashMap<(i64, i64, i64, i64), i64> 
 }
 
 
-fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<String> {
     let nums = input_text.lines()
         .map(|line| line.parse::<i64>())
         .collect::<Result<Vec<i64>, _>>()?;
@@ -102,57 +106,3 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
     Ok(total.to_string())
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-//     let example_input = 
-// "1
-// 10
-// 100
-// 2024";
-    let example_input = "1
-2
-3
-2024";
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

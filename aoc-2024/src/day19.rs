@@ -1,7 +1,16 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::error::Error;
+use anyhow::Result;
 use std::collections::HashMap;
+
+pub const EXAMPLE_INPUT: &str = "r, wr, b, g, bwu, rb, gb, br
+
+brwrr
+bggr
+gbbr
+rrbgbr
+ubwu
+bwurrg
+brgr
+bbrgwb";
 
 fn _check_p1(design: &str, towels: &Vec<&str>) -> bool {
     let mut stack = vec![(design, 0)];
@@ -20,7 +29,7 @@ fn _check_p1(design: &str, towels: &Vec<&str>) -> bool {
     false
 }
 
-fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<String> {
     let parts = input_text.split("\n\n").collect::<Vec<&str>>();
     let towels = parts[0].split(", ").collect::<Vec<&str>>();
     let designs = parts[1].split("\n").collect::<Vec<&str>>();
@@ -63,7 +72,7 @@ fn _check_p2(design: &str, towels: &Vec<&str>) -> i64 {
     }
 }
 
-fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<String> {
     let parts = input_text.split("\n\n").collect::<Vec<&str>>();
     let towels = parts[0].split(", ").collect::<Vec<&str>>();
     let designs = parts[1].split("\n").collect::<Vec<&str>>();
@@ -76,59 +85,3 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
 
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"r, wr, b, g, bwu, rb, gb, br
-
-brwrr
-bggr
-gbbr
-rrbgbr
-ubwu
-bwurrg
-brgr
-bbrgwb";
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

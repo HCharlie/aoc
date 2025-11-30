@@ -1,7 +1,27 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::error::Error;
+use anyhow::Result;
 use std::collections::{HashSet, VecDeque};
+
+pub const EXAMPLE_INPUT: &str = "##########
+#..O..O.O#
+#......O.#
+#.OO..O.O#
+#..O@..O.#
+#O#..O...#
+#O..O..O.#
+#.OO.O.OO#
+#....O...#
+##########
+
+<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
 
 fn _bot_pos(grid: &Vec<Vec<char>>) -> (i64, i64) {
     for (i, row) in grid.iter().enumerate() {
@@ -28,7 +48,7 @@ fn _cal(grid: &Vec<Vec<char>>) -> i64 {
     sum    
 }
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i64> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     let (grid_str, directions) = (parts[0], parts[1]);
     let mut grid: Vec<Vec<char>> = grid_str.lines().map(|line| line.chars().collect()).collect();
@@ -91,7 +111,7 @@ fn _cal_p2(grid: &Vec<Vec<char>>) -> i64 {
     sum    
 }
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     let (grid_str, directions) = (parts[0], parts[1]);
     let grid_temp: Vec<Vec<char>> = grid_str.lines().map(|line| line.chars().collect()).collect();
@@ -138,7 +158,7 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
             while !next_layber_box.is_empty() {
                 let (cr, cc) = match next_layber_box.pop_front() {
                     Some(pos) => pos,
-                    None => return Err("Error popping from next_layber_box".into()),
+                    None => anyhow::bail!("Error popping from next_layber_box"),
                 };
                 let (nr, nc) = (cr + dr, cc + dc);
                 match grid[nr as usize][nc as usize] {
@@ -201,70 +221,3 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     Ok(_cal_p2(&grid))
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"##########
-#..O..O.O#
-#......O.#
-#.OO..O.O#
-#..O@..O.#
-#O#..O...#
-#O..O..O.#
-#.OO.O.OO#
-#....O...#
-##########
-
-<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
-vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
-><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
-<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
-^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
-^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
->^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
-<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
-^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
-v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

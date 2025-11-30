@@ -1,9 +1,56 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::{collections::{HashMap, VecDeque}, error::Error};
+use anyhow::Result;
+use std::{collections::{HashMap, VecDeque}};
+
+pub const EXAMPLE_INPUT: &str = "x00: 1
+x01: 0
+x02: 1
+x03: 1
+x04: 0
+y00: 1
+y01: 1
+y02: 1
+y03: 1
+y04: 1
+
+ntg XOR fgs -> mjb
+y02 OR x01 -> tnw
+kwq OR kpj -> z05
+x00 OR x03 -> fst
+tgd XOR rvg -> z01
+vdt OR tnw -> bfw
+bfw AND frj -> z10
+ffh OR nrd -> bqk
+y00 AND y03 -> djm
+y03 OR y00 -> psh
+bqk OR frj -> z08
+tnw OR fst -> frj
+gnj AND tgd -> z11
+bfw XOR mjb -> z00
+x03 OR x00 -> vdt
+gnj AND wpb -> z02
+x04 AND y00 -> kjc
+djm OR pbm -> qhw
+nrd AND vdt -> hwm
+kjc AND fst -> rvg
+y04 OR y02 -> fgs
+y01 AND x02 -> pbm
+ntg OR kjc -> kwq
+psh XOR fgs -> tgd
+qhw XOR tgd -> z09
+pbm OR djm -> kpj
+x03 XOR y03 -> ffh
+x00 XOR y04 -> ntg
+bfw OR bqk -> z06
+nrd XOR fgs -> wpb
+frj XOR qhw -> z04
+bqk OR frj -> z07
+y03 OR x01 -> nrd
+hwm AND bqk -> z03
+tgd XOR rvg -> z12
+tnw OR pbm -> gnj";
 
 
-fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<String> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
 
     let mut seen = HashMap::new();
@@ -27,23 +74,23 @@ fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
 
     while let Some((k1, op, k2, out)) = dq.pop_front() {
         if seen.contains_key(k1) && seen.contains_key(k2) {
-            let &v1 = seen.get(k1).ok_or("key not found")?;
-            let &v2 = seen.get(k2).ok_or("key not found")?;
+            let &v1 = seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))?;
+            let &v2 = seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))?;
             let result = match op {
                 "AND" => v1 && v2,
                 "OR" => v1 || v2,
                 "XOR" => v1 ^ v2,
                 _ => {
-                    return Err("unknown op".into());
+                    anyhow::bail!("unknown op");
                 },
             };
             seen.insert(out, result);
             continue;
         }
         if op == "AND" {
-            if seen.contains_key(k1) && *seen.get(k1).ok_or("key not found")? == false {
+            if seen.contains_key(k1) && *seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))? == false {
                     seen.insert(out, false);
-            } else if seen.contains_key(k2) && *seen.get(k2).ok_or("key not found")? == false {
+            } else if seen.contains_key(k2) && *seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))? == false {
                     seen.insert(out, false);
             } else {
                 dq.push_back((k1, op, k2, out));
@@ -51,9 +98,9 @@ fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
             continue;
         }
         if op == "OR" {
-            if seen.contains_key(k1) && *seen.get(k1).ok_or("key not found")? == true {
+            if seen.contains_key(k1) && *seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))? == true {
                     seen.insert(out, true);
-            } else if seen.contains_key(k2) && *seen.get(k2).ok_or("key not found")? == true {
+            } else if seen.contains_key(k2) && *seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))? == true {
                     seen.insert(out, true);
             } else {
                 dq.push_back((k1, op, k2, out));
@@ -78,7 +125,7 @@ fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
     for k in z_keys {
         match seen.get(k) {
             Some(&value) => z_values.push(value),
-            None => return Err("Missing z-key value".into()),
+            None => anyhow::bail!("Missing z-key value"),
         }
     }
 
@@ -130,7 +177,7 @@ fn _check(relations: &HashMap<(&str, &str, &str), &str>, n_bits: i64 ) -> i64 {
 
 
 
-        let c_xor_x_xor_y: &str = match relations.get(&(c, "XOR", x_xor_y)).or(relations.get(&(x_xor_y, "XOR", c))) {
+        let _c_xor_x_xor_y: &str = match relations.get(&(c, "XOR", x_xor_y)).or(relations.get(&(x_xor_y, "XOR", c))) {
             Some(&val) => {
                 if val != format!("z{:02}", i) {
                     return i;
@@ -163,7 +210,7 @@ fn _check(relations: &HashMap<(&str, &str, &str), &str>, n_bits: i64 ) -> i64 {
 }
 
 
-fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<String> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     let n_bits = (parts[0].lines().count() / 2) as i64;
     println!("n_bits: {}", n_bits);
@@ -220,97 +267,3 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
 
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"x00: 1
-x01: 0
-x02: 1
-x03: 1
-x04: 0
-y00: 1
-y01: 1
-y02: 1
-y03: 1
-y04: 1
-
-ntg XOR fgs -> mjb
-y02 OR x01 -> tnw
-kwq OR kpj -> z05
-x00 OR x03 -> fst
-tgd XOR rvg -> z01
-vdt OR tnw -> bfw
-bfw AND frj -> z10
-ffh OR nrd -> bqk
-y00 AND y03 -> djm
-y03 OR y00 -> psh
-bqk OR frj -> z08
-tnw OR fst -> frj
-gnj AND tgd -> z11
-bfw XOR mjb -> z00
-x03 OR x00 -> vdt
-gnj AND wpb -> z02
-x04 AND y00 -> kjc
-djm OR pbm -> qhw
-nrd AND vdt -> hwm
-kjc AND fst -> rvg
-y04 OR y02 -> fgs
-y01 AND x02 -> pbm
-ntg OR kjc -> kwq
-psh XOR fgs -> tgd
-qhw XOR tgd -> z09
-pbm OR djm -> kpj
-x03 XOR y03 -> ffh
-x00 XOR y04 -> ntg
-bfw OR bqk -> z06
-nrd XOR fgs -> wpb
-frj XOR qhw -> z04
-bqk OR frj -> z07
-y03 OR x01 -> nrd
-hwm AND bqk -> z03
-tgd XOR rvg -> z12
-tnw OR pbm -> gnj";
-
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    // match sol_func(example_input) {
-    //     Ok(result) => println!("Example result: {}", result),
-    //     Err(e) => eprintln!("Error processing example: {}", e),
-    // }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

@@ -1,13 +1,19 @@
-use super::utils::{get_input_content, submit_check_answer};
-
-use crate::Level;
-
-
-use std::error::Error;
+use anyhow::Result;
 use std::collections::HashSet;
 use std::collections::VecDeque;
 
 use ordered_float::OrderedFloat;
+
+pub const EXAMPLE_INPUT: &str = "RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE";
 
 
 fn _calculate_region(grid: &Vec<Vec<char>>, row: usize, col: usize, visited: &mut HashSet<(usize, usize)>) -> i64 {
@@ -47,7 +53,7 @@ fn _calculate_region(grid: &Vec<Vec<char>>, row: usize, col: usize, visited: &mu
 }
 
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let n_rows = grid.len();
     let n_cols = grid[0].len();
@@ -127,7 +133,7 @@ fn count_corners_for_configuration(config: &[bool; 4]) -> i64 {
 }
 
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let rows = grid.len();
     let cols = grid[0].len();
@@ -171,58 +177,3 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     Ok(regions.iter().map(|region| _calculate_score_for_region(region) * region.len() as i64).sum())
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"RRRRIICCFF
-RRRRIICCCF
-VVRRRCCFFF
-VVRCCCJFFF
-VVVVCJJCFE
-VVIVCCJJEE
-VVIIICJJEE
-MIIIIIJJEE
-MIIISIJEEE
-MMMISSJEEE";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

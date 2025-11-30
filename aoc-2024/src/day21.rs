@@ -1,10 +1,14 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::error::Error;
+use anyhow::Result;
 use std::collections::HashMap;
+
+pub const EXAMPLE_INPUT: &str = "029A
+980A
+179A
+456A
+379A";
 use std::collections::VecDeque;
 
-fn compute_seqs(keypad: &Vec<Vec<Option<&str>>>) -> Result<HashMap<(String, String), Vec<String>>, Box<dyn Error>> {
+fn compute_seqs(keypad: &Vec<Vec<Option<&str>>>) -> Result<HashMap<(String, String), Vec<String>>, > {
     let mut pos = HashMap::new();
     for (r, row) in keypad.iter().enumerate() {
         for (c, &cell) in row.iter().enumerate() {
@@ -24,7 +28,7 @@ fn compute_seqs(keypad: &Vec<Vec<Option<&str>>>) -> Result<HashMap<(String, Stri
 
             let mut possibilities = Vec::new();
             let mut q = VecDeque::new();
-            let (r, c) = *pos.get(x).ok_or_else(|| format!("Position not found for key: {}", x))?;
+            let (r, c) = *pos.get(x).ok_or_else(|| anyhow::anyhow!("Position not found for key: {}", x))?;
             q.push_back(((r as i64, c as i64), String::new()));
             let mut optimal = usize::MAX;
 
@@ -48,7 +52,7 @@ fn compute_seqs(keypad: &Vec<Vec<Option<&str>>>) -> Result<HashMap<(String, Stri
     Ok(seqs)
 }
 
-fn solve(string: &str, seqs: &HashMap<(String, String), Vec<String>>) -> Result<Vec<String>, Box<dyn Error>> {
+fn solve(string: &str, seqs: &HashMap<(String, String), Vec<String>>) -> Result<Vec<String>> {
     let n = string.len();
     let mut options = Vec::new();
     let chars: Vec<char> = string.chars().collect();
@@ -56,12 +60,12 @@ fn solve(string: &str, seqs: &HashMap<(String, String), Vec<String>>) -> Result<
         if i == 0 {
             match seqs.get(&("A".to_string(), chars[i].to_string())) {
                 Some(re) => options.push(re.clone()),
-                None => return Err("unexpected".into()),
+                None => anyhow::bail!("unexpected"),
             }
         } else {
             match seqs.get(&(chars[i-1].to_string(), chars[i].to_string())) {
                 Some(re) => options.push(re.clone()),
-                None => return Err("unexpected".into())
+                None => anyhow::bail!("unexpected")
             }
         }
     }
@@ -85,7 +89,7 @@ fn compute_length(
     cache: &mut HashMap<(String, i64), i64>,
     dir_seqs: &HashMap<(String, String), Vec<String>>,
     dir_lengths: &HashMap<(String, String), i64>
-) -> Result<i64, Box<dyn Error>> {
+) -> Result<i64> {
     // Check cache first
     if let Some(&result) = cache.get(&(seq.to_string(), depth)) {
         return Ok(result);
@@ -98,7 +102,7 @@ fn compute_length(
             let from = if i == 0 { "A" } else { &chars[i-1].to_string() };
             total += match dir_lengths.get(&(from.to_string(), c.to_string())) {
                 Some(&length) => length,
-                None => return Err("unexpected Error".into())
+                None => anyhow::bail!("unexpected Error")
             };
         }
         cache.insert((seq.to_string(), depth), total);
@@ -114,10 +118,10 @@ fn compute_length(
                 .collect::<Result<Vec<_>, _>>()?
                 .into_iter()
                 .min()
-                .ok_or("No minimum found")?;
+                .ok_or_else(|| anyhow::anyhow!("No minimum found"))?;
             length += min_length;
         } else {
-            return Err("unexpected Error".into());
+            anyhow::bail!("unexpected Error");
         }
     }
 
@@ -126,7 +130,7 @@ fn compute_length(
 }
 
 
-fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<String> {
     let codes: Vec<&str> = input_text.lines().collect();
 
     let num_keypad = vec![
@@ -176,7 +180,7 @@ fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
 
 }
 
-fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<String> {
     
     let codes: Vec<&str> = input_text.lines().collect();
 
@@ -227,54 +231,3 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
 
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"029A
-980A
-179A
-456A
-379A";
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

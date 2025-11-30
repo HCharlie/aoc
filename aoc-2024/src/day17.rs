@@ -1,8 +1,12 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::error::Error;
+use anyhow::Result;
 
-fn p1(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub const EXAMPLE_INPUT: &str = "Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0";
+
+pub fn p1(input_text: &str) -> Result<String> {
     let parts = input_text.split("\n\n").collect::<Vec<&str>>();
     // Parse initial register values from input
     let re = regex::Regex::new(r"Register [A-C]: (\d+)")?;
@@ -115,7 +119,7 @@ fn find_min_a(instructions: &Vec<i64>, index: usize, curr_a: i64) -> Option<i64>
     None
 }
 
-fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<String> {
     // 0,1, 5,4, 3,0
     // 2,4, 1,1, 7,5, 0,3, 1,4, 4,0, 5,5, 3,0
     let parts = input_text.split("\n\n").collect::<Vec<&str>>();
@@ -135,54 +139,3 @@ fn p2(input_text: &str) -> Result<String, Box<dyn Error>> {
     }
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"Register A: 729
-Register B: 0
-Register C: 0
-
-Program: 0,1,5,4,3,0";
-
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}
