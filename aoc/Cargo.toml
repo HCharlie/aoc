@@ -1,0 +1,16 @@
+[package]
+name = "aoc"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "aoc"
+path = "src/main.rs"
+
+[dependencies]
+aoc-common = { path = "../aoc-common" }
+aoc-2024 = { path = "../aoc-2024" }
+
+clap.workspace = true
+anyhow.workspace = true
+
