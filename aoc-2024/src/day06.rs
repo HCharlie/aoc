@@ -1,12 +1,18 @@
-use super::utils::{get_input_content, submit_check_answer};
-
-use crate::Level;
-
-
+use anyhow::Result;
 use std::collections::HashSet;
-use std::error::Error;
 
-fn _get_start_position(grid: &Vec<Vec<char>>) -> Result<(i32, i32), Box<dyn Error>> {
+pub const EXAMPLE_INPUT: &str = "....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...";
+
+fn _get_start_position(grid: &Vec<Vec<char>>) -> Result<(i32, i32)> {
     for (i, row) in grid.iter().enumerate() {
         for (j, c) in row.iter().enumerate() {
             if *c == '^' {
@@ -14,11 +20,11 @@ fn _get_start_position(grid: &Vec<Vec<char>>) -> Result<(i32, i32), Box<dyn Erro
             }
         }
     }
-    Err("No start position found".into())
+    Err(anyhow::anyhow!("No start position found"))
 
 }
 
-fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>, Box<dyn Error>> {
+fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>> {
     let mut distinct_positions: HashSet<(i32, i32)> = HashSet::new();
 
     let rows = grid.len() as i32;
@@ -51,7 +57,7 @@ fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>,
     Ok(distinct_positions)
 }
 
-fn p1(input_text: &str) -> Result<i32, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i32> {
     
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     
@@ -60,7 +66,7 @@ fn p1(input_text: &str) -> Result<i32, Box<dyn Error>> {
     Ok(distinct_positions.len() as i32)
 }
 
-fn _check_loop_exist(grid: &Vec<Vec<char>>, start_row: i32, start_col: i32) -> Result<bool, Box<dyn Error>> {
+fn _check_loop_exist(grid: &Vec<Vec<char>>, start_row: i32, start_col: i32) -> Result<bool> {
     let mut distinct_positions: HashSet<(i32, i32, i32, i32)> = HashSet::new();
     let rows = grid.len() as i32;
     let cols: i32 = grid[0].len() as i32;
@@ -99,7 +105,7 @@ fn _check_loop_exist(grid: &Vec<Vec<char>>, start_row: i32, start_col: i32) -> R
     Ok(false)
 }
 
-fn p2(input_text: &str) -> Result<i32, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i32> {
     let mut grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let (start_row, start_col) = _get_start_position(&grid)?;
 
@@ -120,57 +126,3 @@ fn p2(input_text: &str) -> Result<i32, Box<dyn Error>> {
     Ok(potential_obstacles_positions)
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = "....#.....
-.........#
-..........
-..#.......
-.......#..
-..........
-.#..^.....
-........#.
-#.........
-......#...";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

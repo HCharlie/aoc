@@ -1,7 +1,14 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::error::Error;
+use anyhow::Result;
 use std::collections::VecDeque;
+
+pub const EXAMPLE_INPUT: &str = "89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732";
 
 
 fn _helper_p1(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) -> i64 {
@@ -39,18 +46,18 @@ fn _helper_p1(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) 
 
 }
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i64> {
     let mut scores: i64 = 0;
     let grid: Vec<Vec<i64>> = input_text
         .lines()
         .map(|line| {
             line.chars()
                 .map(|c| c.to_digit(10)
-                    .ok_or_else(|| format!("Invalid digit: {}", c))
+                    .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
                     .map(|d| d as i64))
-                .collect::<Result<Vec<i64>, String>>()
+                .collect::<Result<Vec<i64>>>()
         })
-        .collect::<Result<Vec<Vec<i64>>, String>>()?;
+        .collect::<Result<Vec<Vec<i64>>>>()?;
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -98,18 +105,18 @@ fn _helper_p2(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) 
 
 }
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
     let mut scores: i64 = 0;
     let grid: Vec<Vec<i64>> = input_text
         .lines()
         .map(|line| {
             line.chars()
                 .map(|c| c.to_digit(10)
-                    .ok_or_else(|| format!("Invalid digit: {}", c))
+                    .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
                     .map(|d| d as i64))
-                .collect::<Result<Vec<i64>, String>>()
+                .collect::<Result<Vec<i64>>>()
         })
-        .collect::<Result<Vec<Vec<i64>>, String>>()?;
+        .collect::<Result<Vec<Vec<i64>>>>()?;
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -123,55 +130,3 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     Ok(scores)
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = "89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

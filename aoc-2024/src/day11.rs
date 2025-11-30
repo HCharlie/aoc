@@ -1,13 +1,10 @@
-use super::utils::{get_input_content, submit_check_answer};
+use anyhow::Result;
 
-use crate::Level;
-
-
-use std::error::Error;
+pub const EXAMPLE_INPUT: &str = "125 17";
 
 
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i64> {
     
     let blinks = 25;
 
@@ -28,11 +25,11 @@ fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
 
                     let left = match s[..mid].parse::<i64>() {
                         Ok(n) => n,
-                        Err(e) => return Err(Box::new(e))
+                        Err(e) => return Err(e.into())
                     };
                     let right = match s[mid..].parse::<i64>() {
                         Ok(n) => n,
-                        Err(e) => return Err(Box::new(e))
+                        Err(e) => return Err(e.into())
                     };
                     new_stones.push(left);
                     new_stones.push(right);
@@ -78,7 +75,7 @@ fn _calculate_stones(stone: i64, remaining_blinks: i64, visited: &mut std::colle
     result
 }
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
     let blinks = 75;
 
     let initial_stones: Vec<i64> = input_text
@@ -97,48 +94,3 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     Ok(result as i64)
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = "125 17";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

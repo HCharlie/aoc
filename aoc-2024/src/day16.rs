@@ -1,7 +1,24 @@
-use super::utils::{get_input_content, submit_check_answer};
-use crate::Level;
-use std::{collections::{BinaryHeap,HashMap, VecDeque, HashSet}, error::Error};
+use anyhow::Result;
+use std::{collections::{BinaryHeap,HashMap, VecDeque, HashSet}};
 use rustworkx_core::petgraph::{graph::NodeIndex, Graph};
+
+pub const EXAMPLE_INPUT: &str = "#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################";
 
 use rustworkx_core::shortest_path::{dijkstra, all_shortest_paths};
 use rustworkx_core::dictmap::DictMap;
@@ -10,7 +27,11 @@ use rustworkx_core::Result as GraphResult;
 
 
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i64> {
+    p1_rustworkx(input_text)
+}
+
+fn _p1(input_text: &str) -> Result<i64> {
     let mut score = 0;
     let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
     let rows = grid.len();
@@ -64,7 +85,11 @@ fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
 }
 
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
+    p2_rustworkx(input_text)
+}
+
+fn _p2(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
     let rows = grid.len();
     let cols = grid[0].len();
@@ -154,7 +179,7 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
 }
 
 
-fn p1_rustworkx(input_text: &str) -> Result<i64, Box<dyn Error>> {
+fn p1_rustworkx(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
     let rows = grid.len();
     let cols = grid[0].len();
@@ -211,14 +236,14 @@ fn p1_rustworkx(input_text: &str) -> Result<i64, Box<dyn Error>> {
            &graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None
         );
         let dist_map = res?;
-        let dist = dist_map.get(&end_idx).ok_or("No path found")?;
+        let dist = dist_map.get(&end_idx).ok_or_else(|| anyhow::anyhow!("No path found"))?;
         ans = ans.min(*dist as i64);   
     }
     Ok(ans)
 }
 
 
-fn p2_rustworkx(input_text: &str) -> Result<i64, Box<dyn Error>> {
+fn p2_rustworkx(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
     let rows = grid.len();
     let cols = grid[0].len();
@@ -277,7 +302,7 @@ fn p2_rustworkx(input_text: &str) -> Result<i64, Box<dyn Error>> {
            &graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None
         );
         let dist_map = res?;
-        let dist = dist_map.get(&end_idx).ok_or("No path found")?;
+        let dist = dist_map.get(&end_idx).ok_or_else(|| anyhow::anyhow!("No path found"))?;
         if shortest_distance > *dist as i64 {
             shortest_distance = *dist as i64;
             best_end = (end_pos.0, end_pos.1, d);
@@ -304,66 +329,3 @@ fn p2_rustworkx(input_text: &str) -> Result<i64, Box<dyn Error>> {
 }
 
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = 
-"#################
-#...#...#...#..E#
-#.#.#.#.#.#.#.#.#
-#.#.#.#...#...#.#
-#.#.#.#.###.#.#.#
-#...#.#.#.....#.#
-#.#.#.#.#.#####.#
-#.#...#.#.#.....#
-#.#.#####.#.###.#
-#.#.#.......#...#
-#.#.###.#####.###
-#.#.#...#.....#.#
-#.#.#.#####.###.#
-#.#.#.........#.#
-#.#.#.#########.#
-#S#.............#
-#################";
-
-
-    let sol_func = match level {
-        Level::One => p1_rustworkx,
-        Level::Two => p2_rustworkx,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

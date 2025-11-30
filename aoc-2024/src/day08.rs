@@ -1,11 +1,19 @@
-use super::utils::{get_input_content, submit_check_answer};
-
-use crate::Level;
-
-
-use std::error::Error;
+use anyhow::Result;
 use std::collections::HashMap;
 use std::collections::HashSet;
+
+pub const EXAMPLE_INPUT: &str = "............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............";
 
 
 fn _get_hmap(grid: &Vec<Vec<char>>) -> HashMap<char, Vec<(usize, usize)>> {
@@ -22,7 +30,7 @@ fn _get_hmap(grid: &Vec<Vec<char>>) -> HashMap<char, Vec<(usize, usize)>> {
     hmap
 }
 
-fn _get_unique_antinode_per_frequency_p1(antennas: &Vec<(usize, usize)>, n_rows: usize, n_cols: usize) -> Result<HashSet<(usize, usize)>, Box<dyn Error>> {
+fn _get_unique_antinode_per_frequency_p1(antennas: &Vec<(usize, usize)>, n_rows: usize, n_cols: usize) -> Result<HashSet<(usize, usize)>> {
     let mut unique_locations: HashSet<(usize, usize)> = HashSet::new();
     for i in 0..antennas.len() - 1 {
         for j in i+1..antennas.len() {
@@ -44,7 +52,7 @@ fn _get_unique_antinode_per_frequency_p1(antennas: &Vec<(usize, usize)>, n_rows:
 
 }
 
-fn _get_unique_antinode_per_frequency_p2(antennas: &Vec<(usize, usize)>, n_rows: usize, n_cols: usize) -> Result<HashSet<(usize, usize)>, Box<dyn Error>> {
+fn _get_unique_antinode_per_frequency_p2(antennas: &Vec<(usize, usize)>, n_rows: usize, n_cols: usize) -> Result<HashSet<(usize, usize)>> {
     let mut unique_locations: HashSet<(usize, usize)> = HashSet::new();
     for i in 0..antennas.len() - 1 {
         for j in i+1..antennas.len() {
@@ -77,7 +85,7 @@ fn _get_unique_antinode_per_frequency_p2(antennas: &Vec<(usize, usize)>, n_rows:
 
 }
 
-fn p1(input_text: &str) -> Result<i32, Box<dyn Error>> {
+pub fn p1(input_text: &str) -> Result<i32> {
     let mut unique_locations: HashSet<(usize, usize)> = HashSet::new();
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let n_rows = grid.len();
@@ -92,7 +100,7 @@ fn p1(input_text: &str) -> Result<i32, Box<dyn Error>> {
 }
 
 
-fn p2(input_text: &str) -> Result<i32, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i32> {
     let mut unique_locations: HashSet<(usize, usize)> = HashSet::new();
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let n_rows = grid.len();
@@ -106,59 +114,3 @@ fn p2(input_text: &str) -> Result<i32, Box<dyn Error>> {
     Ok(unique_locations.len() as i32)
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = "............
-........0...
-.....0......
-.......0....
-....0.......
-......A.....
-............
-............
-........A...
-.........A..
-............
-............";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

@@ -1,12 +1,9 @@
-use super::utils::{get_input_content, submit_check_answer};
-
-use crate::Level;
-
-
-use std::error::Error;
+use anyhow::Result;
 use std::collections::HashMap;
 
-fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub const EXAMPLE_INPUT: &str = "2333133121414131402";
+
+pub fn p1(input_text: &str) -> Result<i64> {
     let mut checksum: i64 = 0;
     let nums: Vec<i64> = input_text
         .chars()
@@ -55,7 +52,7 @@ fn p1(input_text: &str) -> Result<i64, Box<dyn Error>> {
 }
 
 
-fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
+pub fn p2(input_text: &str) -> Result<i64> {
     let mut checksum: i64 = 0;
     let nums: Vec<i64> = input_text
         .chars()
@@ -71,7 +68,7 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     for (i, &x) in nums.iter().enumerate() {
         if i % 2 == 0 {
             if x == 0 {
-                return Err("unexpected x=0 for file".into());
+                anyhow::bail!("unexpected x=0 for file");
             }
             files.insert(fid, (pos, x));
             fid += 1;
@@ -110,48 +107,3 @@ fn p2(input_text: &str) -> Result<i64, Box<dyn Error>> {
     Ok(checksum)
 }
 
-pub fn run(day: u8, level: Level, debug: bool) -> () {
-    let example_input = "2333133121414131402";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}

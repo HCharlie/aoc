@@ -1,7 +1,15 @@
-use super::utils::{get_input_content, submit_check_answer};
-
-use crate::Level;
-fn count_xmas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> Result<i32, Box<dyn std::error::Error>> {
+use anyhow::Result;
+pub const EXAMPLE_INPUT: &str = "MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX";
+fn count_xmas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> Result<i32> {
     let directions = [
         (0, 1),   // Horizontal right
         (1, 0),   // Vertical down
@@ -87,7 +95,7 @@ fn count_x_mas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> i32
 }
 
 
-fn p1(input_text: &str) -> Result<i32, Box<dyn std::error::Error>> {
+pub fn p1(input_text: &str) -> Result<i32> {
     
     let mut sum = 0;
 
@@ -110,7 +118,7 @@ fn p1(input_text: &str) -> Result<i32, Box<dyn std::error::Error>> {
     Ok(sum)
 }
 
-fn p2(input_text: &str) -> Result<i32, Box<dyn std::error::Error>> {
+pub fn p2(input_text: &str) -> Result<i32> {
     
     let mut sum = 0;
 
@@ -133,58 +141,3 @@ fn p2(input_text: &str) -> Result<i32, Box<dyn std::error::Error>> {
     Ok(sum)
 }
 
-pub fn run(day: u8, level: Level, debug:bool) -> () {
-    let example_input = "MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX";
-
-    let sol_func = match level {
-        Level::One => p1,
-        Level::Two => p2,
-    };
-
-    match sol_func(example_input) {
-        Ok(result) => println!("Example result: {}", result),
-        Err(e) => eprintln!("Error processing example: {}", e),
-    }
-
-    let content = match get_input_content(day) {
-        Ok(content) => content,
-        Err(e) => {
-            eprintln!("Error reading input file: {}", e);
-            return;
-        }
-    };
-
-    let answer = match sol_func(&content) {
-        Ok(answer) => answer,
-        Err(e) => {
-            eprintln!("Error processing input: {}", e);
-            return;
-        }
-    };
-
-    if debug {
-        println!("Answer: {}", answer);
-        return ();
-    }
-
-    match submit_check_answer(day, level as u8, &answer.to_string()) {
-        Ok(is_correct) => println!(
-            "Answer {} is {}",
-            answer,
-            if is_correct { "correct" } else { "wrong" }
-        ),
-        Err(e) => {
-            eprintln!("Error submitting answer: {}", e);
-            return;
-        }
-    }
-}
