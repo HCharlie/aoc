@@ -1,0 +1,16 @@
+[package]
+name = "aoc-2024"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "aoc2024"
+path = "src/lib.rs"
+
+[dependencies]
+aoc-common = { path = "../aoc-common" }
+regex.workspace = true
+ordered-float.workspace = true
+rustworkx-core.workspace = true
+anyhow.workspace = true
+
