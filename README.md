@@ -1,11 +1,13 @@
-# Rust implementation of aoc
+# AOC
+
+Rust implementation of aoc
 
 ## How to setup
-1. Put your session token into the .aoc_token file like below
+1. Put your session token into the `.aoc_token` file like below
 ```
 session=xxxxx
 ```
-2. Run command
+2. Commands to run
 
 ```bash
 # Run locally
