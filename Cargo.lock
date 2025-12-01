@@ -107,6 +107,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "aoc-2024",
+ "aoc-2025",
  "aoc-common",
  "clap",
 ]
@@ -125,6 +126,10 @@ dependencies = [
 [[package]]
 name = "aoc-2025"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "aoc-common",
+]
 
 [[package]]
 name = "aoc-common"

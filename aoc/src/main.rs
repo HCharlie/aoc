@@ -44,6 +44,9 @@ fn main() -> Result<()> {
         2024 => {
             aoc2024::run_day_example(args.day, level);
         }
+        2025 => {
+            aoc2025::run_day_example(args.day, level);
+        }
         _ => {
             anyhow::bail!("Year {} is not implemented yet", args.year);
         }
@@ -55,6 +58,7 @@ fn main() -> Result<()> {
     // Run real input and optionally submit
     let answer = match args.year {
         2024 => aoc2024::run_day_real(args.day, level)?,
+        2025 => aoc2025::run_day_real(args.day, level)?,
         _ => anyhow::bail!("Year {} is not implemented yet", args.year),
     };
 

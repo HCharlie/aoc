@@ -10,6 +10,7 @@ path = "src/main.rs"
 [dependencies]
 aoc-common = { path = "../aoc-common" }
 aoc-2024 = { path = "../aoc-2024" }
+aoc-2025 = { path = "../aoc-2025" }
 
 clap.workspace = true
 anyhow.workspace = true
