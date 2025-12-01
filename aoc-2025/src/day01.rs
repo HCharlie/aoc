@@ -39,11 +39,38 @@ pub fn p1(input_text: &str) -> Result<i32> {
 }
 
 pub fn p2(input_text: &str) -> Result<i32> {
-    println!("Day 1 Part 2 not implemented yet.");
+    let mut curr = 50;
+    let circle_len = 100;
+    let mut total_visited_zeros :i32 = 0;
+
     for line in input_text.lines() {
-        println!("{}", line);
+        if line.is_empty() {
+            continue;
+        }
+        let (turn, dist) = line.split_at(1);
+        let mut dist: i32 = dist.parse()?;
+        total_visited_zeros += dist / circle_len;
+        dist = dist % circle_len;
+        match turn {      
+            "L" => {
+                if dist > curr && curr != 0 {
+                    total_visited_zeros += 1;
+                }
+                curr = (curr + circle_len - dist) % circle_len;
+            }
+            "R" => {
+                if curr + dist > circle_len && curr != 0 {
+                    total_visited_zeros += 1;
+                }
+                curr = (curr + dist) % circle_len;
+            }
+            _ => anyhow::bail!("Invalid turn direction: {}", turn),
+        }
+        if curr == 0 {
+            total_visited_zeros += 1;
+        }
     }
     
-    Ok(0)
+    Ok(total_visited_zeros)
 
 }
