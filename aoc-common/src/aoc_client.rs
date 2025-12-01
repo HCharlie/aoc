@@ -8,6 +8,13 @@ use std::path::Path;
 pub fn get_input_content(year: u16, day: u8) -> Result<String> {
     let file_path = format!("aoc-{}/data/day{:02}.txt", year, day);
 
+    if let Some(parent) = Path::new(&file_path).parent() {
+        if !parent.exists() {
+            std::fs::create_dir_all(parent)
+                .context(format!("Failed to create directory: {:?}", parent))?;
+        }
+    }
+
     if !Path::new(&file_path).exists() {
         download_input_data(year, day, &file_path)
             .context(format!("Failed to download input for year {} day {}", year, day))?;
