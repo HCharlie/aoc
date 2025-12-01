@@ -2,24 +2,6 @@ use anyhow::Result;
 use std::{collections::{BinaryHeap,HashMap, VecDeque, HashSet}};
 use rustworkx_core::petgraph::{graph::NodeIndex, Graph};
 
-pub const EXAMPLE_INPUT: &str = "#################
-#...#...#...#..E#
-#.#.#.#.#.#.#.#.#
-#.#.#.#...#...#.#
-#.#.#.#.###.#.#.#
-#...#.#.#.....#.#
-#.#.#.#.#.#####.#
-#.#...#.#.#.....#
-#.#.#####.#.###.#
-#.#.#.......#...#
-#.#.###.#####.###
-#.#.#...#.....#.#
-#.#.#.#####.###.#
-#.#.#.........#.#
-#.#.#.#########.#
-#S#.............#
-#################";
-
 use rustworkx_core::shortest_path::{dijkstra, all_shortest_paths};
 use rustworkx_core::dictmap::DictMap;
 
@@ -328,4 +310,38 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
 
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 11048);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 64);
+    }
+}
 

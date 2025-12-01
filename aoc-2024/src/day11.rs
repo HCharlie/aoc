@@ -1,9 +1,5 @@
 use anyhow::Result;
 
-pub const EXAMPLE_INPUT: &str = "125 17";
-
-
-
 pub fn p1(input_text: &str) -> Result<i64> {
     
     let blinks = 25;
@@ -92,5 +88,25 @@ pub fn p2(input_text: &str) -> Result<i64> {
     
     
     Ok(result as i64)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "125 17";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 55312);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // Note: p2 is expensive for the example, just testing it runs without error
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 65601038650482);
+    }
 }
 

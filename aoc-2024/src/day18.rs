@@ -1,33 +1,6 @@
 use anyhow::Result;
 use std::collections::{HashSet, VecDeque};
 
-pub const EXAMPLE_INPUT: &str = "GRID: 7 12
-5,4
-4,2
-4,5
-3,0
-2,1
-6,3
-2,4
-1,5
-0,6
-3,3
-2,6
-5,1
-1,2
-5,5
-2,5
-6,5
-1,4
-0,4
-6,4
-1,1
-6,1
-1,0
-0,5
-1,6
-2,0";
-
 fn parse_grid_params(input_text: &str) -> Result<((i64, i64), &str)> {
     let mut lines = input_text.lines();
     let first_line = lines.next().ok_or_else(|| anyhow::anyhow!("Empty input"))?;
@@ -143,5 +116,49 @@ pub fn p1(input_text: &str) -> Result<String> {
 pub fn p2(input_text: &str) -> Result<String> {
     let ((grid_size, bytes_falling), remaining) = parse_grid_params(input_text)?;
     p2_impl(remaining, grid_size, bytes_falling)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "GRID: 7 12
+5,4
+4,2
+4,5
+3,0
+2,1
+6,3
+2,4
+1,5
+0,6
+3,3
+2,6
+5,1
+1,2
+5,5
+2,5
+6,5
+1,4
+0,4
+6,4
+1,1
+6,1
+1,0
+0,5
+1,6
+2,0";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "22");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "6,1");
+    }
 }
 

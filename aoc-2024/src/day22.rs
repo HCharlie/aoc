@@ -2,11 +2,6 @@ use anyhow::Result;
 use std::{collections::HashMap};
 use std::collections::VecDeque;
 
-pub const EXAMPLE_INPUT: &str = "1
-2
-3
-2024";
-
 fn _mix(num: &i64, secret: &i64) -> i64 {
     *num ^ *secret
 }
@@ -104,5 +99,28 @@ pub fn p2(input_text: &str) -> Result<String> {
     }
     let total = *seqs_map.values().max().unwrap_or(&0);
     Ok(total.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "1
+2
+3
+2024";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "37990510");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // Note: p2 example has different expected value
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "23");
+    }
 }
 

@@ -1,40 +1,6 @@
 use anyhow::Result;
 use std::{collections::{HashMap, HashSet}};
 
-pub const EXAMPLE_INPUT: &str = "kh-tc
-qp-kh
-de-cg
-ka-co
-yn-aq
-qp-ub
-cg-tb
-vc-aq
-tb-ka
-wh-tc
-yn-cg
-kh-ub
-ta-co
-de-co
-tc-td
-tb-wq
-wh-td
-ta-ka
-td-qp
-aq-cg
-wq-ub
-ub-vc
-de-ta
-wq-aq
-wq-vc
-wh-yn
-ka-de
-kh-ta
-co-tc
-wh-qp
-tb-vc
-td-yn";
-
-
 pub fn p1(input_text: &str) -> Result<String> {
     let mut m: HashMap<&str, HashSet<&str>> = HashMap::new();
     for line in input_text.lines() {
@@ -117,5 +83,55 @@ pub fn p2(input_text: &str) -> Result<String> {
     let mut longest: Vec<String> = seen.iter().max_by_key(|&x| x.len()).ok_or_else(|| anyhow::anyhow!("No solution found"))?.clone();
     longest.sort();
     Ok(longest.join(","))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "kh-tc
+qp-kh
+de-cg
+ka-co
+yn-aq
+qp-ub
+cg-tb
+vc-aq
+tb-ka
+wh-tc
+yn-cg
+kh-ub
+ta-co
+de-co
+tc-td
+tb-wq
+wh-td
+ta-ka
+td-qp
+aq-cg
+wq-ub
+ub-vc
+de-ta
+wq-aq
+wq-vc
+wh-yn
+ka-de
+kh-ta
+co-tc
+wh-qp
+tb-vc
+td-yn";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "7");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "co,de,ka,ta");
+    }
 }
 

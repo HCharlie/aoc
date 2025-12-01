@@ -1,8 +1,6 @@
 use anyhow::Result;
 use regex::Regex;
 
-pub const EXAMPLE_INPUT: &str = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
-
 pub fn p1(input_text: &str) -> Result<i32> {
     let re = Regex::new(r"mul\((\d+),(\d+)\)")?;
     let mut sum = 0;
@@ -40,5 +38,26 @@ pub fn p2(input_text: &str) -> Result<i32> {
     }
 
     Ok(sum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        println!("p1 result: {}", result);
+        assert_eq!(result, 161);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        println!("p2 result: {}", result);
+        assert_eq!(result, 48);
+    }
 }
 

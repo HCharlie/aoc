@@ -1,46 +1,6 @@
 use anyhow::Result;
 use std::vec;
 
-pub const EXAMPLE_INPUT: &str = "#####
-.####
-.####
-.####
-.#.#.
-.#...
-.....
-
-#####
-##.##
-.#.##
-...##
-...#.
-...#.
-.....
-
-.....
-#....
-#....
-#...#
-#.#.#
-#.###
-#####
-
-.....
-.....
-#.#..
-###..
-###.#
-###.#
-#####
-
-.....
-.....
-.....
-#....
-#.#..
-#.#.#
-#####";
-
 fn _convert_grid(grid: &Vec<Vec<char>>) -> Vec<i64> {
     let cols = grid[0].len();
     let mut lock = vec![-1; cols];
@@ -96,5 +56,63 @@ pub fn p1(input_text: &str) -> Result<String> {
 
 pub fn p2(_input_text: &str) -> Result<String> {
     Err(anyhow::anyhow!("Not implemented"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "#####
+.####
+.####
+.####
+.#.#.
+.#...
+.....
+
+#####
+##.##
+.#.##
+...##
+...#.
+...#.
+.....
+
+.....
+#....
+#....
+#...#
+#.#.#
+#.###
+#####
+
+.....
+.....
+#.#..
+###..
+###.#
+###.#
+#####
+
+.....
+.....
+.....
+#....
+#.#..
+#.#.#
+#####";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "3");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // p2 not implemented for day 25
+        let result = p2(EXAMPLE_INPUT);
+        assert!(result.is_err());
+    }
 }
 

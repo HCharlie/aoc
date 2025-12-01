@@ -1,23 +1,6 @@
 use anyhow::Result;
 use std::collections::{HashMap, HashSet, VecDeque};
 
-pub const EXAMPLE_INPUT: &str = "###############
-#...#...#.....#
-#.#.#.#.#.###.#
-#S#...#.#.#...#
-#######.#.#.###
-#######.#.#...#
-#######.#.###.#
-###..E#...#...#
-###.#######.###
-#...###...#...#
-#.#####.#.###.#
-#.#...#.#.#...#
-#.#.#.#.#.#.###
-#...#...#...###
-###############";
-
-
 pub fn p1(input_text: &str) -> Result<String> {
     let grid = input_text.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
     
@@ -212,5 +195,40 @@ pub fn p2(input_text: &str) -> Result<String> {
     // println!("saved_steps {:?}", saved_steps);
     Ok(cnt.to_string())
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "###############
+#...#...#.....#
+#.#.#.#.#.###.#
+#S#...#.#.#...#
+#######.#.#.###
+#######.#.#...#
+#######.#.###.#
+###..E#...#...#
+###.#######.###
+#...###...#...#
+#.#####.#.###.#
+#.#...#.#.#...#
+#.#.#.#.#.#.###
+#...#...#...###
+###############";
+
+    #[test]
+    fn test_p1_example() {
+        // p1 with example returns 0 because the threshold is >= 100
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "0");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // p2 with example returns 0 because the threshold is >= 100
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "0");
+    }
 }
 

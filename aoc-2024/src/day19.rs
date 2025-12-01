@@ -1,17 +1,6 @@
 use anyhow::Result;
 use std::collections::HashMap;
 
-pub const EXAMPLE_INPUT: &str = "r, wr, b, g, bwu, rb, gb, br
-
-brwrr
-bggr
-gbbr
-rrbgbr
-ubwu
-bwurrg
-brgr
-bbrgwb";
-
 fn _check_p1(design: &str, towels: &Vec<&str>) -> bool {
     let mut stack = vec![(design, 0)];
 
@@ -83,5 +72,33 @@ pub fn p2(input_text: &str) -> Result<String> {
     } 
     Ok(cnt.to_string())
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "r, wr, b, g, bwu, rb, gb, br
+
+brwrr
+bggr
+gbbr
+rrbgbr
+ubwu
+bwurrg
+brgr
+bbrgwb";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "6");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "16");
+    }
 }
 

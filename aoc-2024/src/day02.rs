@@ -1,11 +1,4 @@
 use anyhow::Result;
-pub const EXAMPLE_INPUT: &str = "7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9
-";
 
 fn check_safe(items: &Vec<i32>) -> Result<bool> {
     if items.len() == 1 {
@@ -70,3 +63,28 @@ pub fn p2(input_text: &str) -> Result<i32> {
     Ok(counter)
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9
+";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 2);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 4);
+    }
+}

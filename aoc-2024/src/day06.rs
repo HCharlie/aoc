@@ -1,17 +1,6 @@
 use anyhow::Result;
 use std::collections::HashSet;
 
-pub const EXAMPLE_INPUT: &str = "....#.....
-.........#
-..........
-..#.......
-.......#..
-..........
-.#..^.....
-........#.
-#.........
-......#...";
-
 fn _get_start_position(grid: &Vec<Vec<char>>) -> Result<(i32, i32)> {
     for (i, row) in grid.iter().enumerate() {
         for (j, c) in row.iter().enumerate() {
@@ -124,5 +113,33 @@ pub fn p2(input_text: &str) -> Result<i32> {
     }
 
     Ok(potential_obstacles_positions)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 41);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 6);
+    }
 }
 

@@ -1,19 +1,5 @@
 use anyhow::{Context, Result};
 
-pub const EXAMPLE_INPUT: &str = "DIMENSIONS: 11 7
-p=0,4 v=3,-3
-p=6,3 v=-1,-3
-p=10,3 v=-1,2
-p=2,0 v=2,-1
-p=0,0 v=1,3
-p=3,0 v=-2,-2
-p=7,6 v=-1,-3
-p=3,0 v=-1,-2
-p=9,3 v=2,3
-p=7,3 v=-1,2
-p=2,4 v=2,-3
-p=9,5 v=-3,-3";
-
 fn parse_dimensions(input_text: &str) -> Result<((i64, i64), &str)> {
     let mut lines = input_text.lines();
     let first_line = lines.next().ok_or_else(|| anyhow::anyhow!("Empty input"))?;
@@ -130,5 +116,37 @@ pub fn p1(input_text: &str) -> Result<i64> {
 pub fn p2(input_text: &str) -> Result<i64> {
     let ((wide, tall), remaining) = parse_dimensions(input_text)?;
     p2_impl(remaining, wide, tall)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "DIMENSIONS: 11 7
+p=0,4 v=3,-3
+p=6,3 v=-1,-3
+p=10,3 v=-1,2
+p=2,0 v=2,-1
+p=0,0 v=1,3
+p=3,0 v=-2,-2
+p=7,6 v=-1,-3
+p=3,0 v=-1,-2
+p=9,3 v=2,3
+p=7,3 v=-1,2
+p=2,4 v=2,-3
+p=9,5 v=-3,-3";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 12);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // p2 is about finding the easter egg pattern, just verify it runs
+        let result = p2(EXAMPLE_INPUT);
+        assert!(result.is_ok());
+    }
 }
 

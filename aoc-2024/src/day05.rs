@@ -2,35 +2,6 @@ use anyhow::Result;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-pub const EXAMPLE_INPUT: &str = "47|53
-97|13
-97|61
-97|47
-75|29
-61|13
-75|53
-29|13
-97|29
-53|29
-61|53
-97|53
-61|29
-47|13
-75|47
-97|75
-47|61
-75|61
-47|29
-75|13
-53|13
-
-75,47,61,53,29
-97,61,53,29,13
-75,29,13
-75,97,47,61,53
-61,13,29
-97,13,75,29,47";
-
 fn _parse_input(input_text: &str) -> Result<(&str, &str)> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     if parts.len() != 2 {
@@ -152,5 +123,51 @@ pub fn p2(input_text: &str) -> Result<i32> {
         }
     }
     Ok(ans)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 143);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 123);
+    }
 }
 

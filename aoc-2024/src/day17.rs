@@ -1,11 +1,5 @@
 use anyhow::Result;
 
-pub const EXAMPLE_INPUT: &str = "Register A: 729
-Register B: 0
-Register C: 0
-
-Program: 0,1,5,4,3,0";
-
 pub fn p1(input_text: &str) -> Result<String> {
     let parts = input_text.split("\n\n").collect::<Vec<&str>>();
     // Parse initial register values from input
@@ -136,6 +130,30 @@ pub fn p2(input_text: &str) -> Result<String> {
         Ok(min_a.to_string())
     } else {
         panic!("not found");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "4,6,3,5,6,3,5,2,1,0");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // p2 has different logic and example
+        let result = p2(EXAMPLE_INPUT);
+        assert!(result.is_ok());
     }
 }
 

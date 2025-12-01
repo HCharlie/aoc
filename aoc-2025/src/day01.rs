@@ -1,16 +1,5 @@
 use anyhow::Result;
 
-pub const EXAMPLE_INPUT: &str = "L68
-L30
-R48
-L5
-R60
-L55
-L1
-L99
-R14
-L82";
-
 pub fn p1(input_text: &str) -> Result<i32> {
     let mut curr = 50;
     let circle_len = 100;
@@ -73,4 +62,32 @@ pub fn p2(input_text: &str) -> Result<i32> {
     
     Ok(total_visited_zeros)
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 3);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 6);
+    }
 }

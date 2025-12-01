@@ -1,11 +1,5 @@
 use anyhow::Result;
 use std::collections::HashMap;
-
-pub const EXAMPLE_INPUT: &str = "029A
-980A
-179A
-456A
-379A";
 use std::collections::VecDeque;
 
 fn compute_seqs(keypad: &Vec<Vec<Option<&str>>>) -> Result<HashMap<(String, String), Vec<String>>, > {
@@ -229,5 +223,29 @@ pub fn p2(input_text: &str) -> Result<String> {
 
     Ok(total.to_string())
 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "029A
+980A
+179A
+456A
+379A";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, "126384");
+    }
+
+    #[test]
+    fn test_p2_example() {
+        // p2 is computationally intensive, just verify it runs
+        let result = p2(EXAMPLE_INPUT);
+        assert!(result.is_ok());
+    }
 }
 

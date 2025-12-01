@@ -1,13 +1,7 @@
 use anyhow::Result;
 use std::collections::HashMap;
 
-pub const EXAMPLE_INPUT: &str = "3   4
-4   3
-2   5
-1   3
-3   9
-3   3
-";
+
 
 pub fn p1(input_text: &str) -> Result<i32> {
     let mut left = Vec::new();
@@ -57,5 +51,29 @@ pub fn p2(input_text: &str) -> Result<i32> {
         .iter()
         .map(|(&key, &left_count)| right.get(&key).unwrap_or(&0) * key * left_count)
         .sum())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    pub const EXAMPLE_INPUT: &str = "3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+";
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 11);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 31);
+    }
 }
 

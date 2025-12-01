@@ -1,16 +1,6 @@
 use anyhow::Result;
 use std::collections::VecDeque;
 
-pub const EXAMPLE_INPUT: &str = "89010123
-78121874
-87430965
-96549874
-45678903
-32019012
-01329801
-10456732";
-
-
 fn _helper_p1(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) -> i64 {
     let mut visited = vec![vec![false; col]; row];
     let mut queue = VecDeque::new();
@@ -128,5 +118,31 @@ pub fn p2(input_text: &str) -> Result<i64> {
     
 
     Ok(scores)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 36);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 81);
+    }
 }
 

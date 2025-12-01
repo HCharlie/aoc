@@ -4,18 +4,6 @@ use std::collections::VecDeque;
 
 use ordered_float::OrderedFloat;
 
-pub const EXAMPLE_INPUT: &str = "RRRRIICCFF
-RRRRIICCCF
-VVRRRCCFFF
-VVRCCCJFFF
-VVVVCJJCFE
-VVIVCCJJEE
-VVIIICJJEE
-MIIIIIJJEE
-MIIISIJEEE
-MMMISSJEEE";
-
-
 fn _calculate_region(grid: &Vec<Vec<char>>, row: usize, col: usize, visited: &mut HashSet<(usize, usize)>) -> i64 {
  
     let n_rows = grid.len();
@@ -175,5 +163,33 @@ pub fn p2(input_text: &str) -> Result<i64> {
 
 
     Ok(regions.iter().map(|region| _calculate_score_for_region(region) * region.len() as i64).sum())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 1930);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 1206);
+    }
 }
 

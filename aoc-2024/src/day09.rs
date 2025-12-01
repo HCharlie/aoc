@@ -1,8 +1,6 @@
 use anyhow::Result;
 use std::collections::HashMap;
 
-pub const EXAMPLE_INPUT: &str = "2333133121414131402";
-
 pub fn p1(input_text: &str) -> Result<i64> {
     let mut checksum: i64 = 0;
     let nums: Vec<i64> = input_text
@@ -105,5 +103,24 @@ pub fn p2(input_text: &str) -> Result<i64> {
     }
 
     Ok(checksum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "2333133121414131402";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 1928);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 2858);
+    }
 }
 

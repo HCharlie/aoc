@@ -1,14 +1,5 @@
 use anyhow::Result;
-pub const EXAMPLE_INPUT: &str = "MMMSXXMASM
-MSAMXMSMSA
-AMXSXMAAMM
-MSAMASMSMX
-XMASAMXAMM
-XXAMMXXAMA
-SMSMSASXSS
-SAXAMASAAA
-MAMMMXMMMM
-MXMXAXMASX";
+
 fn count_xmas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> Result<i32> {
     let directions = [
         (0, 1),   // Horizontal right
@@ -139,5 +130,33 @@ pub fn p2(input_text: &str) -> Result<i32> {
         }
     }
     Ok(sum)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX";
+
+    #[test]
+    fn test_p1_example() {
+        let result = p1(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 18);
+    }
+
+    #[test]
+    fn test_p2_example() {
+        let result = p2(EXAMPLE_INPUT).unwrap();
+        assert_eq!(result, 9);
+    }
 }
 
