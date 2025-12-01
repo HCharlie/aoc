@@ -40,18 +40,6 @@ fn main() -> Result<()> {
     let level = Level::from_str(&args.level)
         .context("Invalid level specified (use '1' or '2')")?;
 
-    match args.year {
-        2024 => {
-            aoc2024::run_day_example(args.day, level);
-        }
-        2025 => {
-            aoc2025::run_day_example(args.day, level);
-        }
-        _ => {
-            anyhow::bail!("Year {} is not implemented yet", args.year);
-        }
-    }
-
     // Benchmark the solution
     let start = Instant::now();
     
