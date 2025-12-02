@@ -15,4 +15,7 @@ cargo run <year> <day> <level>
 
 # Run and submit
 cargo run <year> <day> <level> -s
+
+# Run tests example
+cargo test --package aoc-2025 day02
 ```
