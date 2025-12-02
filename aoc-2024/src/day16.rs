@@ -1,13 +1,11 @@
 use anyhow::Result;
-use std::{collections::{BinaryHeap,HashMap, VecDeque, HashSet}};
 use rustworkx_core::petgraph::{graph::NodeIndex, Graph};
+use std::collections::{BinaryHeap, HashMap, HashSet, VecDeque};
 
-use rustworkx_core::shortest_path::{dijkstra, all_shortest_paths};
 use rustworkx_core::dictmap::DictMap;
+use rustworkx_core::shortest_path::{all_shortest_paths, dijkstra};
 
 use rustworkx_core::Result as GraphResult;
-
-
 
 pub fn p1(input_text: &str) -> Result<i64> {
     p1_rustworkx(input_text)
@@ -15,7 +13,10 @@ pub fn p1(input_text: &str) -> Result<i64> {
 
 fn _p1(input_text: &str) -> Result<i64> {
     let mut score = 0;
-    let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
+    let grid: Vec<Vec<char>> = input_text
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -33,7 +34,7 @@ fn _p1(input_text: &str) -> Result<i64> {
 
     let mut pq = BinaryHeap::new();
     let mut seen = HashSet::new();
-    
+
     // BinaryHeap is max-heap, so we negate cost for min-heap behavior
     pq.push((0, sr, sc, 0, 1));
     seen.insert((sr, sc, 0, 1));
@@ -46,13 +47,12 @@ fn _p1(input_text: &str) -> Result<i64> {
         }
 
         let moves = [
-            (cost - 1, r + dr, c + dc, dr, dc),      // forward
-            (cost - 1000, r, c, dc, -dr),            // turn right
-            (cost - 1000, r, c, -dc, dr)             // turn left
+            (cost - 1, r + dr, c + dc, dr, dc), // forward
+            (cost - 1000, r, c, dc, -dr),       // turn right
+            (cost - 1000, r, c, -dc, dr),       // turn left
         ];
 
         for (new_cost, nr, nc, ndr, ndc) in moves {
-
             if grid[nr as usize][nc as usize] == '#' {
                 continue;
             }
@@ -60,19 +60,20 @@ fn _p1(input_text: &str) -> Result<i64> {
                 continue;
             }
             pq.push((new_cost, nr, nc, ndr, ndc));
-
         }
     }
     Ok(score)
 }
-
 
 pub fn p2(input_text: &str) -> Result<i64> {
     p2_rustworkx(input_text)
 }
 
 fn _p2(input_text: &str) -> Result<i64> {
-    let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
+    let grid: Vec<Vec<char>> = input_text
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -90,7 +91,8 @@ fn _p2(input_text: &str) -> Result<i64> {
 
     let mut pq = BinaryHeap::new();
     let mut lowest_cost: HashMap<(i64, i64, i64, i64), i64> = HashMap::new();
-    let mut backtrack: HashMap<(i64, i64, i64, i64), HashSet<(i64, i64, i64, i64)>> = HashMap::new();
+    let mut backtrack: HashMap<(i64, i64, i64, i64), HashSet<(i64, i64, i64, i64)>> =
+        HashMap::new();
     let mut best_cost = i64::MAX;
     let mut end_states = HashSet::new();
 
@@ -99,11 +101,11 @@ fn _p2(input_text: &str) -> Result<i64> {
     lowest_cost.insert((sr, sc, 0, 1), 0);
 
     while let Some((neg_cost, r, c, dr, dc)) = pq.pop() {
-        let cost = -neg_cost;  // Convert back to positive cost
+        let cost = -neg_cost; // Convert back to positive cost
         if cost > *lowest_cost.get(&(r, c, dr, dc)).unwrap_or(&i64::MAX) {
             continue;
         }
-        
+
         if grid[r as usize][c as usize] == 'E' {
             if cost > best_cost {
                 break;
@@ -113,30 +115,30 @@ fn _p2(input_text: &str) -> Result<i64> {
         }
 
         let moves = [
-            (cost + 1, r + dr, c + dc, dr, dc),      // forward
-            (cost + 1000, r, c, dc, -dr),            // turn right
-            (cost + 1000, r, c, -dc, dr)             // turn left
+            (cost + 1, r + dr, c + dc, dr, dc), // forward
+            (cost + 1000, r, c, dc, -dr),       // turn right
+            (cost + 1000, r, c, -dc, dr),       // turn left
         ];
 
         for (new_cost, nr, nc, ndr, ndc) in moves {
             if grid[nr as usize][nc as usize] == '#' {
                 continue;
             }
-            
+
             let lowest = *lowest_cost.get(&(nr, nc, ndr, ndc)).unwrap_or(&i64::MAX);
             if new_cost > lowest {
                 continue;
             }
-            
+
             if new_cost < lowest {
                 backtrack.insert((nr, nc, ndr, ndc), HashSet::new());
                 lowest_cost.insert((nr, nc, ndr, ndc), new_cost);
             }
-            
+
             if let Some(prev_states) = backtrack.get_mut(&(nr, nc, ndr, ndc)) {
                 prev_states.insert((r, c, dr, dc));
             }
-            
+
             pq.push((-new_cost, nr, nc, ndr, ndc));
         }
     }
@@ -156,13 +158,19 @@ fn _p2(input_text: &str) -> Result<i64> {
         }
     }
 
-    let num = seen.iter().map(|(r, c, _, _)| (r, c)).collect::<HashSet<_>>().len() as i64;
+    let num = seen
+        .iter()
+        .map(|(r, c, _, _)| (r, c))
+        .collect::<HashSet<_>>()
+        .len() as i64;
     Ok(num)
 }
 
-
 fn p1_rustworkx(input_text: &str) -> Result<i64> {
-    let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
+    let grid: Vec<Vec<char>> = input_text
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -178,7 +186,6 @@ fn p1_rustworkx(input_text: &str) -> Result<i64> {
                     let idx = graph.add_node((r, c, d));
                     node_indices.insert((r as i64, c as i64, d as i64), idx);
                 }
-                
             }
         }
     }
@@ -194,7 +201,7 @@ fn p1_rustworkx(input_text: &str) -> Result<i64> {
     }
 
     // Add edges
-    for (r, c, d) in node_indices.keys() {        
+    for (r, c, d) in node_indices.keys() {
         let curr_idx = node_indices[&(*r, *c, *d)];
         for dd in [1, -1] {
             let next_d = ((*d + dd + 4) % 4) as i64;
@@ -204,7 +211,7 @@ fn p1_rustworkx(input_text: &str) -> Result<i64> {
         }
 
         let (dr, dc) = directions[*d as usize];
-        if let Some(&next_idx) = node_indices.get(&(*r+dr, *c+dc, *d)) {
+        if let Some(&next_idx) = node_indices.get(&(*r + dr, *c + dc, *d)) {
             graph.add_edge(curr_idx, next_idx, 1);
         }
     }
@@ -214,19 +221,22 @@ fn p1_rustworkx(input_text: &str) -> Result<i64> {
     for d in 0..4 {
         let end_idx = node_indices[&(end_pos.0, end_pos.1, d)];
 
-        let res: GraphResult<DictMap<NodeIndex, usize>> = dijkstra(
-           &graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None
-        );
+        let res: GraphResult<DictMap<NodeIndex, usize>> =
+            dijkstra(&graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None);
         let dist_map = res?;
-        let dist = dist_map.get(&end_idx).ok_or_else(|| anyhow::anyhow!("No path found"))?;
-        ans = ans.min(*dist as i64);   
+        let dist = dist_map
+            .get(&end_idx)
+            .ok_or_else(|| anyhow::anyhow!("No path found"))?;
+        ans = ans.min(*dist as i64);
     }
     Ok(ans)
 }
 
-
 fn p2_rustworkx(input_text: &str) -> Result<i64> {
-    let grid: Vec<Vec<char>> = input_text.lines().map(|line| line.chars().collect()).collect();
+    let grid: Vec<Vec<char>> = input_text
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let rows = grid.len();
     let cols = grid[0].len();
 
@@ -242,7 +252,6 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
                     let idx = graph.add_node((r, c, d));
                     node_indices.insert((r as i64, c as i64, d as i64), idx);
                 }
-                
             }
         }
     }
@@ -258,7 +267,7 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
     }
 
     // Add edges
-    for (r, c, d) in node_indices.keys() {        
+    for (r, c, d) in node_indices.keys() {
         let curr_idx = node_indices[&(*r, *c, *d)];
         for dd in [1, -1] {
             let next_d = ((*d + dd + 4) % 4) as i64;
@@ -268,10 +277,9 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
         }
 
         let (dr, dc) = directions[*d as usize];
-        if let Some(&next_idx) = node_indices.get(&(*r+dr, *c+dc, *d)) {
+        if let Some(&next_idx) = node_indices.get(&(*r + dr, *c + dc, *d)) {
             graph.add_edge(curr_idx, next_idx, 1);
         }
-        
     }
 
     let start_idx = node_indices[&(start_pos.0, start_pos.1, 0)];
@@ -280,23 +288,23 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
     for d in 0..4 {
         let end_idx = node_indices[&(end_pos.0, end_pos.1, d)];
 
-        let res: GraphResult<DictMap<NodeIndex, usize>> = dijkstra(
-           &graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None
-        );
+        let res: GraphResult<DictMap<NodeIndex, usize>> =
+            dijkstra(&graph, start_idx, Some(end_idx), |e| Ok(*e.weight()), None);
         let dist_map = res?;
-        let dist = dist_map.get(&end_idx).ok_or_else(|| anyhow::anyhow!("No path found"))?;
+        let dist = dist_map
+            .get(&end_idx)
+            .ok_or_else(|| anyhow::anyhow!("No path found"))?;
         if shortest_distance > *dist as i64 {
             shortest_distance = *dist as i64;
             best_end = (end_pos.0, end_pos.1, d);
-        }        
+        }
     }
     println!("shortest distance: {:?}", shortest_distance);
 
     let end_idx = node_indices[&best_end];
 
-    let res: GraphResult<Vec<Vec<NodeIndex>>> = all_shortest_paths(
-        &graph, start_idx, end_idx, |e| Ok(*e.weight())
-    );
+    let res: GraphResult<Vec<Vec<NodeIndex>>> =
+        all_shortest_paths(&graph, start_idx, end_idx, |e| Ok(*e.weight()));
     let dist_map = res?;
 
     let mut unique_nodes = HashSet::new();
@@ -307,7 +315,6 @@ fn p2_rustworkx(input_text: &str) -> Result<i64> {
         }
     }
     Ok(unique_nodes.len() as i64)
-
 }
 
 #[cfg(test)]
@@ -344,4 +351,3 @@ mod tests {
         assert_eq!(result, 64);
     }
 }
-

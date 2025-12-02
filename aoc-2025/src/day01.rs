@@ -10,7 +10,7 @@ pub fn p1(input_text: &str) -> Result<i32> {
         }
         let (turn, dist) = line.split_at(1);
         let dist: i32 = dist.parse()?;
-        match turn {            
+        match turn {
             "L" => {
                 curr = (curr + circle_len - dist) % circle_len;
             }
@@ -30,7 +30,7 @@ pub fn p1(input_text: &str) -> Result<i32> {
 pub fn p2(input_text: &str) -> Result<i32> {
     let mut curr = 50;
     let circle_len = 100;
-    let mut total_visited_zeros :i32 = 0;
+    let mut total_visited_zeros: i32 = 0;
 
     for line in input_text.lines() {
         if line.is_empty() {
@@ -40,7 +40,7 @@ pub fn p2(input_text: &str) -> Result<i32> {
         let mut dist: i32 = dist.parse()?;
         total_visited_zeros += dist / circle_len;
         dist = dist % circle_len;
-        match turn {      
+        match turn {
             "L" => {
                 if dist > curr && curr != 0 {
                     total_visited_zeros += 1;
@@ -59,9 +59,8 @@ pub fn p2(input_text: &str) -> Result<i32> {
             total_visited_zeros += 1;
         }
     }
-    
-    Ok(total_visited_zeros)
 
+    Ok(total_visited_zeros)
 }
 
 #[cfg(test)]

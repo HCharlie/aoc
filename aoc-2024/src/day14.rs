@@ -3,7 +3,7 @@ use anyhow::{Context, Result};
 fn parse_dimensions(input_text: &str) -> Result<((i64, i64), &str)> {
     let mut lines = input_text.lines();
     let first_line = lines.next().ok_or_else(|| anyhow::anyhow!("Empty input"))?;
-    
+
     if let Some(dims) = first_line.strip_prefix("DIMENSIONS: ") {
         let parts: Vec<&str> = dims.split_whitespace().collect();
         if parts.len() != 2 {
@@ -20,18 +20,16 @@ fn parse_dimensions(input_text: &str) -> Result<((i64, i64), &str)> {
 
 fn p1_impl(input_text: &str, wide: i64, tall: i64) -> Result<i64> {
     let re = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)")?;
-    let bots: Vec<(i64, i64, i64, i64)> = input_text.lines()
+    let bots: Vec<(i64, i64, i64, i64)> = input_text
+        .lines()
         .map(|line| {
-            let cap = re.captures(line)
+            let cap = re
+                .captures(line)
                 .ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
-            let p1 = cap[1].parse::<i64>()
-                .context("Failed to parse p1")?;
-            let p2 = cap[2].parse::<i64>()
-                .context("Failed to parse p2")?;
-            let v1 = cap[3].parse::<i64>()
-                .context("Failed to parse v1")?;
-            let v2 = cap[4].parse::<i64>()
-                .context("Failed to parse v2")?;
+            let p1 = cap[1].parse::<i64>().context("Failed to parse p1")?;
+            let p2 = cap[2].parse::<i64>().context("Failed to parse p2")?;
+            let v1 = cap[3].parse::<i64>().context("Failed to parse v1")?;
+            let v2 = cap[4].parse::<i64>().context("Failed to parse v2")?;
             Ok((p1, p2, v1, v2))
         })
         .collect::<Result<Vec<(i64, i64, i64, i64)>>>()?;
@@ -43,37 +41,32 @@ fn p1_impl(input_text: &str, wide: i64, tall: i64) -> Result<i64> {
         let x = (x + vx * time).rem_euclid(wide);
         let y = (y + vy * time).rem_euclid(tall);
         println!("after 100s movement {} {}", x, y);
-        if x >= 0 && x < wide/2 && y >= 0 && y < tall/2 {
+        if x >= 0 && x < wide / 2 && y >= 0 && y < tall / 2 {
             quadrants[0] += 1;
-        } else if x > wide/2 && x < wide && y >= 0 && y < tall/2 {
+        } else if x > wide / 2 && x < wide && y >= 0 && y < tall / 2 {
             quadrants[1] += 1;
-        } else if x >= 0 && x < wide/2 && y > tall/2 && y < tall {
+        } else if x >= 0 && x < wide / 2 && y > tall / 2 && y < tall {
             quadrants[2] += 1;
-        } else if x > wide/2 && x < wide && y > tall/2 && y < tall {
+        } else if x > wide / 2 && x < wide && y > tall / 2 && y < tall {
             quadrants[3] += 1;
         }
     }
     println!("{:?}", quadrants);
-    Ok(quadrants.iter()
-        .filter(|&&x| x > 0)
-        .product())
+    Ok(quadrants.iter().filter(|&&x| x > 0).product())
 }
-
 
 fn p2_impl(input_text: &str, wide: i64, tall: i64) -> Result<i64> {
     let re = regex::Regex::new(r"p=(-?\d+),(-?\d+) v=(-?\d+),(-?\d+)")?;
-    let bots: Vec<(i64, i64, i64, i64)> = input_text.lines()
+    let bots: Vec<(i64, i64, i64, i64)> = input_text
+        .lines()
         .map(|line| {
-            let cap = re.captures(line)
+            let cap = re
+                .captures(line)
                 .ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
-            let p1 = cap[1].parse::<i64>()
-                .context("Failed to parse p1")?;
-            let p2 = cap[2].parse::<i64>()
-                .context("Failed to parse p2")?;
-            let v1 = cap[3].parse::<i64>()
-                .context("Failed to parse v1")?;
-            let v2 = cap[4].parse::<i64>()
-                .context("Failed to parse v2")?;
+            let p1 = cap[1].parse::<i64>().context("Failed to parse p1")?;
+            let p2 = cap[2].parse::<i64>().context("Failed to parse p2")?;
+            let v1 = cap[3].parse::<i64>().context("Failed to parse v1")?;
+            let v2 = cap[4].parse::<i64>().context("Failed to parse v2")?;
             Ok((p1, p2, v1, v2))
         })
         .collect::<Result<Vec<(i64, i64, i64, i64)>>>()?;
@@ -86,19 +79,17 @@ fn p2_impl(input_text: &str, wide: i64, tall: i64) -> Result<i64> {
             let (x, y, vx, vy) = bots[i];
             let x = (x + vx * seconds).rem_euclid(wide);
             let y = (y + vy * seconds).rem_euclid(tall);
-            if x >= 0 && x < wide/2 && y >= 0 && y < tall/2 {
+            if x >= 0 && x < wide / 2 && y >= 0 && y < tall / 2 {
                 quadrants[0] += 1;
-            } else if x > wide/2 && x < wide && y >= 0 && y < tall/2 {
+            } else if x > wide / 2 && x < wide && y >= 0 && y < tall / 2 {
                 quadrants[1] += 1;
-            } else if x >= 0 && x < wide/2 && y > tall/2 && y < tall {
+            } else if x >= 0 && x < wide / 2 && y > tall / 2 && y < tall {
                 quadrants[2] += 1;
-            } else if x > wide/2 && x < wide && y > tall/2 && y < tall {
+            } else if x > wide / 2 && x < wide && y > tall / 2 && y < tall {
                 quadrants[3] += 1;
             }
         }
-        let current_sf = quadrants.iter()
-            .filter(|&&x| x > 0)
-            .product();
+        let current_sf = quadrants.iter().filter(|&&x| x > 0).product();
         if min_sf > current_sf {
             min_sf = current_sf;
             best_iteration = seconds;
@@ -149,4 +140,3 @@ p=9,5 v=-3,-3";
         assert!(result.is_ok());
     }
 }
-

@@ -12,7 +12,7 @@ fn is_valid_p1(num: i64) -> bool {
 fn is_valid_p2(num: i64) -> bool {
     let num_str = num.to_string();
     let l = num_str.len();
-    for i in 1..=l/2 {
+    for i in 1..=l / 2 {
         if l % i != 0 {
             continue;
         }
@@ -47,7 +47,6 @@ pub fn p1(input_text: &str) -> Result<i64> {
 }
 
 pub fn p2(input_text: &str) -> Result<i64> {
-    
     let mut total = 0;
 
     for line in input_text.lines() {
@@ -67,7 +66,6 @@ pub fn p2(input_text: &str) -> Result<i64> {
         }
     }
     Ok(total)
-
 }
 
 #[cfg(test)]

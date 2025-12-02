@@ -1,5 +1,5 @@
+use crate::{get_input_content, Level};
 use anyhow::{Context, Result};
-use crate::{Level, get_input_content};
 
 /// Runs the real input with the selected solution function and returns the answer
 pub fn run_real<T: std::fmt::Display>(
@@ -16,9 +16,8 @@ pub fn run_real<T: std::fmt::Display>(
 
     let content = get_input_content(year, day)
         .context(format!("Failed to get input for year {} day {}", year, day))?;
-    
-    let answer = sol_func(&content)
-        .context("Failed to solve puzzle")?;
+
+    let answer = sol_func(&content).context("Failed to solve puzzle")?;
 
     Ok(answer.to_string())
 }

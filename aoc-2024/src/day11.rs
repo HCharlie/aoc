@@ -1,7 +1,6 @@
 use anyhow::Result;
 
 pub fn p1(input_text: &str) -> Result<i64> {
-    
     let blinks = 25;
 
     let mut initial_stones: Vec<i64> = input_text
@@ -21,11 +20,11 @@ pub fn p1(input_text: &str) -> Result<i64> {
 
                     let left = match s[..mid].parse::<i64>() {
                         Ok(n) => n,
-                        Err(e) => return Err(e.into())
+                        Err(e) => return Err(e.into()),
                     };
                     let right = match s[mid..].parse::<i64>() {
                         Ok(n) => n,
-                        Err(e) => return Err(e.into())
+                        Err(e) => return Err(e.into()),
                     };
                     new_stones.push(left);
                     new_stones.push(right);
@@ -33,17 +32,18 @@ pub fn p1(input_text: &str) -> Result<i64> {
                 _ => {
                     new_stones.push(stone * 2024);
                 }
-                
             }
         }
         initial_stones = new_stones;
     }
     return Ok(initial_stones.len() as i64);
-
 }
 
-fn _calculate_stones(stone: i64, remaining_blinks: i64, visited: &mut std::collections::HashMap<(i64, i64), i64>) -> i64 {
-
+fn _calculate_stones(
+    stone: i64,
+    remaining_blinks: i64,
+    visited: &mut std::collections::HashMap<(i64, i64), i64>,
+) -> i64 {
     let key = (stone, remaining_blinks);
     if let Some(&value) = visited.get(&key) {
         return value;
@@ -52,19 +52,20 @@ fn _calculate_stones(stone: i64, remaining_blinks: i64, visited: &mut std::colle
         return 1;
     }
     let result = match stone {
-        0 => {
-            _calculate_stones(1, remaining_blinks-1, visited)
-        }
+        0 => _calculate_stones(1, remaining_blinks - 1, visited),
         n if n.to_string().len() % 2 == 0 => {
             let s = n.to_string();
             let mid = s.len() / 2;
-            let left = s[..mid].parse::<i64>().unwrap_or_else(|e| panic!("Failed to parse left part: {}", e));
-            let right = s[mid..].parse::<i64>().unwrap_or_else(|e| panic!("Failed to parse right part: {}", e));
-            _calculate_stones(left, remaining_blinks - 1, visited) + _calculate_stones(right, remaining_blinks - 1, visited)
+            let left = s[..mid]
+                .parse::<i64>()
+                .unwrap_or_else(|e| panic!("Failed to parse left part: {}", e));
+            let right = s[mid..]
+                .parse::<i64>()
+                .unwrap_or_else(|e| panic!("Failed to parse right part: {}", e));
+            _calculate_stones(left, remaining_blinks - 1, visited)
+                + _calculate_stones(right, remaining_blinks - 1, visited)
         }
-        _ => {
-            _calculate_stones(stone * 2024, remaining_blinks - 1, visited)
-        }
+        _ => _calculate_stones(stone * 2024, remaining_blinks - 1, visited),
     };
 
     visited.insert(key, result);
@@ -78,15 +79,14 @@ pub fn p2(input_text: &str) -> Result<i64> {
         .split_whitespace()
         .map(|s| s.parse::<i64>())
         .collect::<Result<Vec<_>, _>>()?;
-    
+
     let mut memo: std::collections::HashMap<(i64, i64), i64> = std::collections::HashMap::new();
 
     let mut result = 0;
     for stone in initial_stones {
-         result += _calculate_stones(stone, blinks, &mut memo);
+        result += _calculate_stones(stone, blinks, &mut memo);
     }
-    
-    
+
     Ok(result as i64)
 }
 
@@ -109,4 +109,3 @@ mod tests {
         assert_eq!(result, 65601038650482);
     }
 }
-

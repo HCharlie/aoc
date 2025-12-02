@@ -41,10 +41,7 @@ fn count_xmas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> Resu
 }
 
 fn count_x_mas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> i32 {
-    let directions = [
-        (1, 1),
-        (1, -1),
-    ];
+    let directions = [(1, 1), (1, -1)];
     let mut found = true;
 
     for &(dr, dc) in &directions {
@@ -63,31 +60,40 @@ fn count_x_mas(grid: &Vec<Vec<char>>, start_row: usize, start_col: usize) -> i32
             || new_col_opposite >= grid[0].len() as isize
         {
             found = false;
-            break
+            break;
         }
 
-        if !matches!(grid[new_row as usize][new_col as usize], 'M' | 'S') || !matches!(grid[new_row_opposite as usize][new_col_opposite as usize], 'M' | 'S') {
+        if !matches!(grid[new_row as usize][new_col as usize], 'M' | 'S')
+            || !matches!(
+                grid[new_row_opposite as usize][new_col_opposite as usize],
+                'M' | 'S'
+            )
+        {
             found = false;
             break;
         }
         if grid[new_row as usize][new_col as usize] == 'M' {
             if grid[new_row_opposite as usize][new_col_opposite as usize] != 'S' {
                 found = false;
-                break
+                break;
             }
-        }  
-        if grid[new_row as usize][new_col as usize] == 'S' && grid[new_row_opposite as usize][new_col_opposite as usize] != 'M' {
+        }
+        if grid[new_row as usize][new_col as usize] == 'S'
+            && grid[new_row_opposite as usize][new_col_opposite as usize] != 'M'
+        {
             found = false;
-            break
+            break;
         }
     }
 
-    if found { 1 } else { 0 }
+    if found {
+        1
+    } else {
+        0
+    }
 }
 
-
 pub fn p1(input_text: &str) -> Result<i32> {
-    
     let mut sum = 0;
 
     let lines: Vec<&str> = input_text.lines().collect();
@@ -110,7 +116,6 @@ pub fn p1(input_text: &str) -> Result<i32> {
 }
 
 pub fn p2(input_text: &str) -> Result<i32> {
-    
     let mut sum = 0;
 
     let lines: Vec<&str> = input_text.lines().collect();
@@ -159,4 +164,3 @@ MXMXAXMASX";
         assert_eq!(result, 9);
     }
 }
-

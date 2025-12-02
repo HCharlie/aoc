@@ -19,17 +19,20 @@ fn _cal(grid: &Vec<Vec<char>>) -> i64 {
     for row in 0..rows {
         for col in 0..cols {
             if grid[row][col] == 'O' {
-                sum += (100*row + col) as i64;
+                sum += (100 * row + col) as i64;
             }
         }
     }
-    sum    
+    sum
 }
 
 pub fn p1(input_text: &str) -> Result<i64> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     let (grid_str, directions) = (parts[0], parts[1]);
-    let mut grid: Vec<Vec<char>> = grid_str.lines().map(|line| line.chars().collect()).collect();
+    let mut grid: Vec<Vec<char>> = grid_str
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let directions: Vec<char> = directions.chars().filter(|c| *c != '\n').collect();
     let (mut bx, mut by) = _bot_pos(&grid);
     for d in directions {
@@ -82,26 +85,41 @@ fn _cal_p2(grid: &Vec<Vec<char>>) -> i64 {
     for row in 0..rows {
         for col in 0..cols {
             if grid[row][col] == '[' {
-                sum += (100*row + col) as i64;
+                sum += (100 * row + col) as i64;
             }
         }
     }
-    sum    
+    sum
 }
 
 pub fn p2(input_text: &str) -> Result<i64> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
     let (grid_str, directions) = (parts[0], parts[1]);
-    let grid_temp: Vec<Vec<char>> = grid_str.lines().map(|line| line.chars().collect()).collect();
+    let grid_temp: Vec<Vec<char>> = grid_str
+        .lines()
+        .map(|line| line.chars().collect())
+        .collect();
     let mut grid: Vec<Vec<char>> = Vec::new();
     for row in grid_temp {
         let mut new_row = Vec::new();
         for c in row {
             match c {
-                '#' => { new_row.push('#'); new_row.push('#'); }
-                'O' => { new_row.push('['); new_row.push(']'); }
-                '.' => { new_row.push('.'); new_row.push('.'); }
-                '@' => { new_row.push('@'); new_row.push('.'); }
+                '#' => {
+                    new_row.push('#');
+                    new_row.push('#');
+                }
+                'O' => {
+                    new_row.push('[');
+                    new_row.push(']');
+                }
+                '.' => {
+                    new_row.push('.');
+                    new_row.push('.');
+                }
+                '@' => {
+                    new_row.push('@');
+                    new_row.push('.');
+                }
                 _ => panic!("Invalid character in grid"),
             }
         }
@@ -126,7 +144,7 @@ pub fn p2(input_text: &str) -> Result<i64> {
         visited.insert((br, bc));
 
         let mut next_layber_box: VecDeque<(i64, i64)> = VecDeque::new();
-        
+
         next_layber_box.push_back((br, bc));
         let mut go = true;
 
@@ -144,39 +162,37 @@ pub fn p2(input_text: &str) -> Result<i64> {
                         go = false;
                         candidates.clear();
                         break;
-                    },
+                    }
                     '[' => {
                         if !visited.contains(&(nr, nc)) {
                             candidates.push_back((nr, nc));
                             visited.insert((nr, nc));
                         }
-                        if !visited.contains(&(nr, nc+1)) {
-                            candidates.push_back((nr, nc+1));
-                            visited.insert((nr, nc+1));
+                        if !visited.contains(&(nr, nc + 1)) {
+                            candidates.push_back((nr, nc + 1));
+                            visited.insert((nr, nc + 1));
                         }
-                    },
+                    }
                     ']' => {
                         if !visited.contains(&(nr, nc)) {
                             candidates.push_back((nr, nc));
                             visited.insert((nr, nc));
                         }
-                        if !visited.contains(&(nr, nc-1)) {
-                            candidates.push_back((nr, nc-1));
-                            visited.insert((nr, nc-1));
+                        if !visited.contains(&(nr, nc - 1)) {
+                            candidates.push_back((nr, nc - 1));
+                            visited.insert((nr, nc - 1));
                         }
-                    },
+                    }
                     '.' => {
                         continue;
-                    },
+                    }
                     _ => {
                         panic!("Invalid character in grid");
-                    },
+                    }
                 }
-
             }
 
             next_layber_box = candidates;
-
         }
 
         if !go {
@@ -184,14 +200,14 @@ pub fn p2(input_text: &str) -> Result<i64> {
         }
 
         let copy: Vec<Vec<char>> = grid.clone();
-        
+
         for &(tr, tc) in visited.iter() {
             grid[tr as usize][tc as usize] = '.';
         }
         for &(tr, tc) in visited.iter() {
             grid[(tr + dr) as usize][(tc + dc) as usize] = copy[tr as usize][tc as usize];
         }
-        
+
         br += dr;
         bc += dc;
     }
@@ -237,4 +253,3 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
         assert_eq!(result, 9021);
     }
 }
-

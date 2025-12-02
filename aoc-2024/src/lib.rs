@@ -3,8 +3,8 @@
 #![deny(clippy::panic)]
 #![deny(unused_must_use)]
 
-use aoc_common::{Level, run_real};
 use anyhow::Result;
+use aoc_common::{run_real, Level};
 
 mod day01;
 mod day02;

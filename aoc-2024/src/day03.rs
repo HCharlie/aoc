@@ -44,7 +44,8 @@ pub fn p2(input_text: &str) -> Result<i32> {
 mod tests {
     use super::*;
 
-    const EXAMPLE_INPUT: &str = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+    const EXAMPLE_INPUT: &str =
+        "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
 
     #[test]
     fn test_p1_example() {
@@ -60,4 +61,3 @@ mod tests {
         assert_eq!(result, 48);
     }
 }
-

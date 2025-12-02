@@ -10,7 +10,6 @@ fn _get_start_position(grid: &Vec<Vec<char>>) -> Result<(i32, i32)> {
         }
     }
     Err(anyhow::anyhow!("No start position found"))
-
 }
 
 fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>> {
@@ -23,10 +22,21 @@ fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>>
     let mut direction = (-1, 0);
     let mut current_position = (start_row, start_col);
 
-    while current_position.0 >= 0 && current_position.0 < rows && current_position.1 >= 0 && current_position.1 < cols {
-        let next_position = (current_position.0 + direction.0, current_position.1 + direction.1);
+    while current_position.0 >= 0
+        && current_position.0 < rows
+        && current_position.1 >= 0
+        && current_position.1 < cols
+    {
+        let next_position = (
+            current_position.0 + direction.0,
+            current_position.1 + direction.1,
+        );
 
-        if next_position.0 < 0 || next_position.0 >= rows || next_position.1 < 0 || next_position.1 >= cols {
+        if next_position.0 < 0
+            || next_position.0 >= rows
+            || next_position.1 < 0
+            || next_position.1 >= cols
+        {
             break;
         }
 
@@ -47,9 +57,8 @@ fn _get_distinct_positions(grid: &Vec<Vec<char>>) -> Result<HashSet<(i32, i32)>>
 }
 
 pub fn p1(input_text: &str) -> Result<i32> {
-    
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
-    
+
     let distinct_positions = _get_distinct_positions(&grid)?;
 
     Ok(distinct_positions.len() as i32)
@@ -62,15 +71,30 @@ fn _check_loop_exist(grid: &Vec<Vec<char>>, start_row: i32, start_col: i32) -> R
     let mut direction = (-1, 0);
     let mut current_position = (start_row, start_col);
     distinct_positions.insert((start_row, start_col, direction.0, direction.1));
-    while current_position.0 >= 0 && current_position.0 < rows && current_position.1 >= 0 && current_position.1 < cols {
-        distinct_positions.insert((current_position.0, current_position.1, direction.0, direction.1));
-        
-        let next_position = (current_position.0 + direction.0, current_position.1 + direction.1);
+    while current_position.0 >= 0
+        && current_position.0 < rows
+        && current_position.1 >= 0
+        && current_position.1 < cols
+    {
+        distinct_positions.insert((
+            current_position.0,
+            current_position.1,
+            direction.0,
+            direction.1,
+        ));
 
-        if next_position.0 < 0 || next_position.0 >= rows || next_position.1 < 0 || next_position.1 >= cols {
+        let next_position = (
+            current_position.0 + direction.0,
+            current_position.1 + direction.1,
+        );
+
+        if next_position.0 < 0
+            || next_position.0 >= rows
+            || next_position.1 < 0
+            || next_position.1 >= cols
+        {
             break;
         }
-        
 
         if grid[next_position.0 as usize][next_position.1 as usize] == '#' {
             direction = match direction {
@@ -82,14 +106,16 @@ fn _check_loop_exist(grid: &Vec<Vec<char>>, start_row: i32, start_col: i32) -> R
             };
         } else {
             current_position = next_position;
-            if distinct_positions.contains(&(current_position.0, current_position.1, direction.0, direction.1)) {
+            if distinct_positions.contains(&(
+                current_position.0,
+                current_position.1,
+                direction.0,
+                direction.1,
+            )) {
                 return Ok(true);
             }
-            
         }
     }
-
-
 
     Ok(false)
 }
@@ -109,7 +135,6 @@ pub fn p2(input_text: &str) -> Result<i32> {
             potential_obstacles_positions += 1;
         }
         grid[i as usize][j as usize] = '.';
-
     }
 
     Ok(potential_obstacles_positions)
@@ -142,4 +167,3 @@ mod tests {
         assert_eq!(result, 6);
     }
 }
-

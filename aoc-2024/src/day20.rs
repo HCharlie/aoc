@@ -2,8 +2,11 @@ use anyhow::Result;
 use std::collections::{HashMap, HashSet, VecDeque};
 
 pub fn p1(input_text: &str) -> Result<String> {
-    let grid = input_text.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
-    
+    let grid = input_text
+        .lines()
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+
     let n_rows = grid.len();
     let n_cols = grid[0].len();
     let mut cnt_dots = 0;
@@ -38,7 +41,13 @@ pub fn p1(input_text: &str) -> Result<String> {
         for (dr, dc) in [(-1, 0), (1, 0), (0, -1), (0, 1)].iter() {
             let new_r = r + dr;
             let new_c = c + dc;
-            if new_r >= 0 && new_r < n_rows as i32 && new_c >= 0 && new_c < n_cols as i32 && grid[new_r as usize][new_c as usize] != '#' && !seen.contains(&(new_r as usize, new_c as usize)) {
+            if new_r >= 0
+                && new_r < n_rows as i32
+                && new_c >= 0
+                && new_c < n_cols as i32
+                && grid[new_r as usize][new_c as usize] != '#'
+                && !seen.contains(&(new_r as usize, new_c as usize))
+            {
                 seen.insert((new_r as usize, new_c as usize));
                 dq.push_back((new_r, new_c, d + 1));
             }
@@ -66,15 +75,32 @@ pub fn p1(input_text: &str) -> Result<String> {
         for (dr, dc) in [(-1, 0), (1, 0), (0, -1), (0, 1)].iter() {
             let new_r = r + dr;
             let new_c = c + dc;
-            if new_r >= 0 && new_r < n_rows as i32 && new_c >= 0 && new_c < n_cols as i32 && grid[new_r as usize][new_c as usize] != '#' && !seen_new.contains(&(new_r as usize, new_c as usize)) {
+            if new_r >= 0
+                && new_r < n_rows as i32
+                && new_c >= 0
+                && new_c < n_cols as i32
+                && grid[new_r as usize][new_c as usize] != '#'
+                && !seen_new.contains(&(new_r as usize, new_c as usize))
+            {
                 seen_new.insert((new_r as usize, new_c as usize));
                 dq_new.push_back((new_r, new_c, d + 1));
             }
-            if new_r >= 0 && new_r < n_rows as i32 && new_c >= 0 && new_c < n_cols as i32 && grid[new_r as usize][new_c as usize] == '#' {
+            if new_r >= 0
+                && new_r < n_rows as i32
+                && new_c >= 0
+                && new_c < n_cols as i32
+                && grid[new_r as usize][new_c as usize] == '#'
+            {
                 let nnew_r = new_r + dr;
                 let nnew_c = new_c + dc;
-                if nnew_r >= 0 && nnew_r < n_rows as i32 && nnew_c >= 0 && nnew_c < n_cols as i32 && grid[nnew_r as usize][nnew_c as usize] != '#' {
-                    let k = pos_map.get(&(nnew_r, nnew_c)).unwrap() - pos_map.get(&(r, c)).unwrap() - 2;
+                if nnew_r >= 0
+                    && nnew_r < n_rows as i32
+                    && nnew_c >= 0
+                    && nnew_c < n_cols as i32
+                    && grid[nnew_r as usize][nnew_c as usize] != '#'
+                {
+                    let k =
+                        pos_map.get(&(nnew_r, nnew_c)).unwrap() - pos_map.get(&(r, c)).unwrap() - 2;
                     if k > 0 {
                         *saved_steps.entry(k).or_insert(0) += 1;
                     }
@@ -82,9 +108,7 @@ pub fn p1(input_text: &str) -> Result<String> {
                     if k >= 100 {
                         cnt += 1
                     }
-                    
                 }
-
             }
         }
     }
@@ -92,12 +116,12 @@ pub fn p1(input_text: &str) -> Result<String> {
     Ok(cnt.to_string())
 }
 
-
-
-
 pub fn p2(input_text: &str) -> Result<String> {
-    let grid = input_text.lines().map(|line| line.chars().collect::<Vec<char>>()).collect::<Vec<Vec<char>>>();
-    
+    let grid = input_text
+        .lines()
+        .map(|line| line.chars().collect::<Vec<char>>())
+        .collect::<Vec<Vec<char>>>();
+
     let n_rows = grid.len();
     let n_cols = grid[0].len();
     let mut cnt_dots = 0;
@@ -132,7 +156,13 @@ pub fn p2(input_text: &str) -> Result<String> {
         for (dr, dc) in [(-1, 0), (1, 0), (0, -1), (0, 1)].iter() {
             let new_r = r + dr;
             let new_c = c + dc;
-            if new_r >= 0 && new_r < n_rows as i32 && new_c >= 0 && new_c < n_cols as i32 && grid[new_r as usize][new_c as usize] != '#' && !seen.contains(&(new_r as usize, new_c as usize)) {
+            if new_r >= 0
+                && new_r < n_rows as i32
+                && new_c >= 0
+                && new_c < n_cols as i32
+                && grid[new_r as usize][new_c as usize] != '#'
+                && !seen.contains(&(new_r as usize, new_c as usize))
+            {
                 seen.insert((new_r as usize, new_c as usize));
                 dq.push_back((new_r, new_c, d + 1));
             }
@@ -154,24 +184,32 @@ pub fn p2(input_text: &str) -> Result<String> {
             let r = r as i32;
             let c = c as i32;
             for radius in 2..21 {
-                for dr in 0..radius+1 {
+                for dr in 0..radius + 1 {
                     let dc = radius - dr;
-                    for &(nr, nc) in [(r+dr, c+dc), (r+dr, c-dc),(r-dr, c+dc), (r-dr, c-dc)].iter() {
+                    for &(nr, nc) in [
+                        (r + dr, c + dc),
+                        (r + dr, c - dc),
+                        (r - dr, c + dc),
+                        (r - dr, c - dc),
+                    ]
+                    .iter()
+                    {
                         if nr < 0 || nc < 0 || nr >= n_rows as i32 || nc >= n_cols as i32 {
                             continue;
                         }
 
-                        
                         if grid[nr as usize][nc as usize].to_string() == "#" {
                             continue;
                         }
                         // println!("new pos {:?}", pos_map.get(&(nr, nc)).unwrap());
                         // println!("origin pos {:?}", pos_map.get(&(r, c)).unwrap());
                         if seen_cheat.contains(&(nr, nc, r, c)) {
-                            continue
+                            continue;
                         }
                         seen_cheat.insert((nr, nc, r, c));
-                        let k = pos_map.get(&(nr, nc)).unwrap() - pos_map.get(&(r, c)).unwrap() - radius;
+                        let k = pos_map.get(&(nr, nc)).unwrap()
+                            - pos_map.get(&(r, c)).unwrap()
+                            - radius;
                         // println!("k: {:?}", k);
                         if k > 0 {
                             *save_steps.entry(k).or_insert(0) += 1;
@@ -180,21 +218,18 @@ pub fn p2(input_text: &str) -> Result<String> {
                             cnt += 1
                         }
                     }
-                    
                 }
             }
         }
     }
-    for (k, v )in save_steps {
+    for (k, v) in save_steps {
         if k >= 50 {
             println!("k: {}, v: {}", k, v)
         }
     }
 
-    
     // println!("saved_steps {:?}", saved_steps);
     Ok(cnt.to_string())
-
 }
 
 #[cfg(test)]
@@ -231,4 +266,3 @@ mod tests {
         assert_eq!(result, "0");
     }
 }
-

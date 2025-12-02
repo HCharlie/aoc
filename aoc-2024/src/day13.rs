@@ -1,60 +1,92 @@
 use anyhow::{Context, Result};
 
 pub fn p1(input_text: &str) -> Result<i64> {
-    let re = regex::Regex::new(r"Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)")?;
+    let re = regex::Regex::new(
+        r"Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)",
+    )?;
 
-    let games: Vec<(i64, i64, i64, i64, i64, i64)> = input_text.split("\n\n").map(|game| {
-        let caps = re.captures(game).ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
-        let button_a_x = caps[1].parse::<i64>().context("Failed to parse button_a_x")?;
-        let button_a_y = caps[2].parse::<i64>().context("Failed to parse button_a_y")?;
-        let button_b_x = caps[3].parse::<i64>().context("Failed to parse button_b_x")?;
-        let button_b_y = caps[4].parse::<i64>().context("Failed to parse button_b_y")?;
-        let prize_x = caps[5].parse::<i64>().context("Failed to parse prize_x")?;
-        let prize_y = caps[6].parse::<i64>().context("Failed to parse prize_y")?;
-        
-        Ok((button_a_x, button_a_y, button_b_x, button_b_y, prize_x, prize_y))
-    }).collect::<Result<Vec<(i64, i64, i64, i64, i64, i64)>>>()?;
+    let games: Vec<(i64, i64, i64, i64, i64, i64)> = input_text
+        .split("\n\n")
+        .map(|game| {
+            let caps = re
+                .captures(game)
+                .ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
+            let button_a_x = caps[1]
+                .parse::<i64>()
+                .context("Failed to parse button_a_x")?;
+            let button_a_y = caps[2]
+                .parse::<i64>()
+                .context("Failed to parse button_a_y")?;
+            let button_b_x = caps[3]
+                .parse::<i64>()
+                .context("Failed to parse button_b_x")?;
+            let button_b_y = caps[4]
+                .parse::<i64>()
+                .context("Failed to parse button_b_y")?;
+            let prize_x = caps[5].parse::<i64>().context("Failed to parse prize_x")?;
+            let prize_y = caps[6].parse::<i64>().context("Failed to parse prize_y")?;
+
+            Ok((
+                button_a_x, button_a_y, button_b_x, button_b_y, prize_x, prize_y,
+            ))
+        })
+        .collect::<Result<Vec<(i64, i64, i64, i64, i64, i64)>>>()?;
 
     let mut total = 0;
-    
+
     for (ax, ay, bx, by, px, py) in games {
         let denominator = ax * by - ay * bx;
         let ca = (px * by - py * bx) as f64 / denominator as f64;
         let cb = (px as f64 - ax as f64 * ca) / bx as f64;
-        
+
         if ca.fract() == 0.0 && cb.fract() == 0.0 {
             total += (ca * 3.0 + cb) as i64;
         }
     }
     Ok(total)
-
 }
 
-
 pub fn p2(input_text: &str) -> Result<i64> {
-    let re = regex::Regex::new(r"Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)")?;
+    let re = regex::Regex::new(
+        r"Button A: X\+(\d+), Y\+(\d+)\nButton B: X\+(\d+), Y\+(\d+)\nPrize: X=(\d+), Y=(\d+)",
+    )?;
 
-    let games: Vec<(i64, i64, i64, i64, i64, i64)> = input_text.split("\n\n").map(|game| {
-        let caps = re.captures(game).ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
-        let button_a_x = caps[1].parse::<i64>().context("Failed to parse button_a_x")?;
-        let button_a_y = caps[2].parse::<i64>().context("Failed to parse button_a_y")?;
-        let button_b_x = caps[3].parse::<i64>().context("Failed to parse button_b_x")?;
-        let button_b_y = caps[4].parse::<i64>().context("Failed to parse button_b_y")?;
-        let prize_x = caps[5].parse::<i64>().context("Failed to parse prize_x")?;
-        let prize_y = caps[6].parse::<i64>().context("Failed to parse prize_y")?;
-        
-        Ok((button_a_x, button_a_y, button_b_x, button_b_y, prize_x, prize_y))
-    }).collect::<Result<Vec<(i64, i64, i64, i64, i64, i64)>>>()?;
+    let games: Vec<(i64, i64, i64, i64, i64, i64)> = input_text
+        .split("\n\n")
+        .map(|game| {
+            let caps = re
+                .captures(game)
+                .ok_or_else(|| anyhow::anyhow!("Failed to match regex pattern"))?;
+            let button_a_x = caps[1]
+                .parse::<i64>()
+                .context("Failed to parse button_a_x")?;
+            let button_a_y = caps[2]
+                .parse::<i64>()
+                .context("Failed to parse button_a_y")?;
+            let button_b_x = caps[3]
+                .parse::<i64>()
+                .context("Failed to parse button_b_x")?;
+            let button_b_y = caps[4]
+                .parse::<i64>()
+                .context("Failed to parse button_b_y")?;
+            let prize_x = caps[5].parse::<i64>().context("Failed to parse prize_x")?;
+            let prize_y = caps[6].parse::<i64>().context("Failed to parse prize_y")?;
+
+            Ok((
+                button_a_x, button_a_y, button_b_x, button_b_y, prize_x, prize_y,
+            ))
+        })
+        .collect::<Result<Vec<(i64, i64, i64, i64, i64, i64)>>>()?;
 
     let mut total = 0;
-    
+
     for (ax, ay, bx, by, px, py) in games {
         let new_px = px + 10000000000000;
         let new_py = py + 10000000000000;
         let denominator = ax * by - ay * bx;
         let ca = (new_px * by - new_py * bx) as f64 / denominator as f64;
         let cb = (new_px as f64 - ax as f64 * ca) / bx as f64;
-        
+
         if ca.fract() == 0.0 && cb.fract() == 0.0 {
             total += (ca * 3.0 + cb) as i64;
         }
@@ -96,4 +128,3 @@ Prize: X=18641, Y=10279";
         assert!(result.is_ok());
     }
 }
-

@@ -33,7 +33,6 @@ fn _helper_p1(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) 
     }
 
     count
-
 }
 
 pub fn p1(input_text: &str) -> Result<i64> {
@@ -42,9 +41,11 @@ pub fn p1(input_text: &str) -> Result<i64> {
         .lines()
         .map(|line| {
             line.chars()
-                .map(|c| c.to_digit(10)
-                    .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
-                    .map(|d| d as i64))
+                .map(|c| {
+                    c.to_digit(10)
+                        .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
+                        .map(|d| d as i64)
+                })
                 .collect::<Result<Vec<i64>>>()
         })
         .collect::<Result<Vec<Vec<i64>>>>()?;
@@ -56,12 +57,9 @@ pub fn p1(input_text: &str) -> Result<i64> {
             scores += _helper_p1(&grid, i, j, rows, cols);
         }
     }
-    
 
     Ok(scores)
 }
-
-
 
 fn _helper_p2(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) -> i64 {
     let mut queue = VecDeque::new();
@@ -92,7 +90,6 @@ fn _helper_p2(grid: &Vec<Vec<i64>>, i: usize, j: usize, row: usize, col: usize) 
     }
 
     count
-
 }
 
 pub fn p2(input_text: &str) -> Result<i64> {
@@ -101,9 +98,11 @@ pub fn p2(input_text: &str) -> Result<i64> {
         .lines()
         .map(|line| {
             line.chars()
-                .map(|c| c.to_digit(10)
-                    .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
-                    .map(|d| d as i64))
+                .map(|c| {
+                    c.to_digit(10)
+                        .ok_or_else(|| anyhow::anyhow!("Invalid digit: {}", c))
+                        .map(|d| d as i64)
+                })
                 .collect::<Result<Vec<i64>>>()
         })
         .collect::<Result<Vec<Vec<i64>>>>()?;
@@ -115,7 +114,6 @@ pub fn p2(input_text: &str) -> Result<i64> {
             scores += _helper_p2(&grid, i, j, rows, cols);
         }
     }
-    
 
     Ok(scores)
 }
@@ -145,4 +143,3 @@ mod tests {
         assert_eq!(result, 81);
     }
 }
-

@@ -28,7 +28,7 @@ pub fn p1(input_text: &str) -> Result<String> {
         let instr = instructions[ip as usize];
         let literal_operand = instructions[(ip + 1) as usize];
         let operand = match literal_operand {
-            0|1|2|3 => literal_operand,
+            0 | 1 | 2 | 3 => literal_operand,
             4 => ra,
             5 => rb,
             6 => rc,
@@ -38,7 +38,12 @@ pub fn p1(input_text: &str) -> Result<String> {
             0 => ra = ra >> operand,
             1 => rb = rb ^ literal_operand,
             2 => rb = operand % 8,
-            3 => if ra != 0 { ip = literal_operand; continue; },
+            3 => {
+                if ra != 0 {
+                    ip = literal_operand;
+                    continue;
+                }
+            }
             4 => rb = rc ^ rb,
             5 => output.push(operand % 8),
             6 => rb = ra >> operand,
@@ -46,20 +51,22 @@ pub fn p1(input_text: &str) -> Result<String> {
             _ => panic!("Invalid opcode"),
         }
         ip += 2;
-
     }
-    
-    let ans = output.iter().map(|&n| n.to_string()).collect::<Vec<String>>().join(",");
+
+    let ans = output
+        .iter()
+        .map(|&n| n.to_string())
+        .collect::<Vec<String>>()
+        .join(",");
     println!("{:?}", ans);
     Ok(ans)
 }
-
 
 fn _check(a: i64, instructions: &Vec<i64>) -> i64 {
     let mut ra = a;
     let mut rb = 0;
     let mut rc = 0;
-    
+
     let mut output: Vec<i64> = Vec::new();
 
     let mut ip: i64 = 0;
@@ -70,7 +77,7 @@ fn _check(a: i64, instructions: &Vec<i64>) -> i64 {
         let instr = instructions[ip as usize];
         let literal_operand = instructions[(ip + 1) as usize];
         let operand = match literal_operand {
-            0|1|2|3 => literal_operand,
+            0 | 1 | 2 | 3 => literal_operand,
             4 => ra,
             5 => rb,
             6 => rc,
@@ -80,7 +87,12 @@ fn _check(a: i64, instructions: &Vec<i64>) -> i64 {
             0 => ra = ra >> operand,
             1 => rb = rb ^ literal_operand,
             2 => rb = operand % 8,
-            3 => if ra != 0 { ip = literal_operand; continue; },
+            3 => {
+                if ra != 0 {
+                    ip = literal_operand;
+                    continue;
+                }
+            }
             4 => rb = rc ^ rb,
             5 => output.push(operand % 8),
             6 => rb = ra >> operand,
@@ -88,7 +100,6 @@ fn _check(a: i64, instructions: &Vec<i64>) -> i64 {
             _ => panic!("Invalid opcode"),
         }
         ip += 2;
-
     }
     println!("{:?}", output);
     return output[0];
@@ -124,7 +135,6 @@ pub fn p2(input_text: &str) -> Result<String> {
         .filter_map(|n| n.parse().ok())
         .collect();
     // println!("{:?}", instructions);
-    
 
     if let Some(min_a) = find_min_a(&instructions, 0, 0) {
         Ok(min_a.to_string())
@@ -156,4 +166,3 @@ Program: 0,1,5,4,3,0";
         assert!(result.is_ok());
     }
 }
-
