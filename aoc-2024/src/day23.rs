@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{collections::{HashMap, HashSet}};
+use std::collections::{HashMap, HashSet};
 
 pub fn p1(input_text: &str) -> Result<String> {
     let mut m: HashMap<&str, HashSet<&str>> = HashMap::new();
@@ -28,17 +28,19 @@ pub fn p1(input_text: &str) -> Result<String> {
                     triple.sort();
                     seen.insert(triple);
                 }
-
             }
         }
     }
     // println!("{:?}", seen);
     Ok((seen.len()).to_string())
-
 }
 
-
-fn _search(node: &str, req: &mut Vec<String>, seen: &mut HashSet<Vec<String>>, conns: &HashMap<&str, HashSet<&str>>) -> () {
+fn _search(
+    node: &str,
+    req: &mut Vec<String>,
+    seen: &mut HashSet<Vec<String>>,
+    conns: &HashMap<&str, HashSet<&str>>,
+) -> () {
     let mut key = req.clone();
     key.sort();
     if seen.contains(&key) {
@@ -50,7 +52,7 @@ fn _search(node: &str, req: &mut Vec<String>, seen: &mut HashSet<Vec<String>>, c
             if req.contains(&neighbor.to_string()) {
                 continue;
             }
-            
+
             let req_set: HashSet<_> = req.iter().map(|x| x.as_str()).collect();
             match conns.get(neighbor) {
                 Some(n) if req_set.is_subset(n) => (),
@@ -65,7 +67,6 @@ fn _search(node: &str, req: &mut Vec<String>, seen: &mut HashSet<Vec<String>>, c
 }
 
 pub fn p2(input_text: &str) -> Result<String> {
-
     let mut m: HashMap<&str, HashSet<&str>> = HashMap::new();
     for line in input_text.lines() {
         let parts: Vec<&str> = line.split('-').collect();
@@ -80,7 +81,11 @@ pub fn p2(input_text: &str) -> Result<String> {
         let mut req = vec![k.to_string()];
         _search(k, &mut req, &mut seen, &m);
     }
-    let mut longest: Vec<String> = seen.iter().max_by_key(|&x| x.len()).ok_or_else(|| anyhow::anyhow!("No solution found"))?.clone();
+    let mut longest: Vec<String> = seen
+        .iter()
+        .max_by_key(|&x| x.len())
+        .ok_or_else(|| anyhow::anyhow!("No solution found"))?
+        .clone();
     longest.sort();
     Ok(longest.join(","))
 }
@@ -134,4 +139,3 @@ td-yn";
         assert_eq!(result, "co,de,ka,ta");
     }
 }
-

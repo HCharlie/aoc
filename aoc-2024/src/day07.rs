@@ -17,7 +17,8 @@ fn _dfs(target: i64, nums: &Vec<i64>, idx: usize, current: i64) -> Result<bool> 
         return Ok(target == current);
     }
     let next = nums[idx];
-    return Ok(_dfs(target, nums, idx + 1, _add(current, next))? || _dfs(target, nums, idx + 1, _mul(current, next))?);
+    return Ok(_dfs(target, nums, idx + 1, _add(current, next))?
+        || _dfs(target, nums, idx + 1, _mul(current, next))?);
 }
 
 fn _dfs_p2(target: i64, nums: &Vec<i64>, idx: usize, current: i64) -> Result<bool> {
@@ -25,36 +26,41 @@ fn _dfs_p2(target: i64, nums: &Vec<i64>, idx: usize, current: i64) -> Result<boo
         return Ok(target == current);
     }
     let next = nums[idx];
-    return Ok(_dfs_p2(target, nums, idx + 1, _add(current, next))? || _dfs_p2(target, nums, idx + 1, _mul(current, next))? || _dfs_p2(target, nums, idx + 1, _concat(current, next))?);
+    return Ok(_dfs_p2(target, nums, idx + 1, _add(current, next))?
+        || _dfs_p2(target, nums, idx + 1, _mul(current, next))?
+        || _dfs_p2(target, nums, idx + 1, _concat(current, next))?);
 }
 
 pub fn p1(input_text: &str) -> Result<i64> {
     let mut result = 0;
-    
+
     for line in input_text.lines() {
         let parts: Vec<&str> = line.split(": ").collect();
         let test_value: i64 = parts[0].parse()?;
-        let nums: Vec<i64> = parts[1].split(" ").map(|x| x.parse()).collect::<Result<Vec<i64>, _>>()?;
+        let nums: Vec<i64> = parts[1]
+            .split(" ")
+            .map(|x| x.parse())
+            .collect::<Result<Vec<i64>, _>>()?;
         if _dfs(test_value, &nums, 1, nums[0])? {
             result += test_value;
         }
-        
     }
     Ok(result)
 }
 
-
 pub fn p2(input_text: &str) -> Result<i64> {
     let mut result = 0;
-    
+
     for line in input_text.lines() {
         let parts: Vec<&str> = line.split(": ").collect();
         let test_value: i64 = parts[0].parse()?;
-        let nums: Vec<i64> = parts[1].split(" ").map(|x| x.parse()).collect::<Result<Vec<i64>, _>>()?;
+        let nums: Vec<i64> = parts[1]
+            .split(" ")
+            .map(|x| x.parse())
+            .collect::<Result<Vec<i64>, _>>()?;
         if _dfs_p2(test_value, &nums, 1, nums[0])? {
             result += test_value;
         }
-        
     }
     Ok(result)
 }
@@ -85,4 +91,3 @@ mod tests {
         assert_eq!(result, 11387);
     }
 }
-

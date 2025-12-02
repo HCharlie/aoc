@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{collections::{HashMap, VecDeque}};
+use std::collections::{HashMap, VecDeque};
 
 pub fn p1(input_text: &str) -> Result<String> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
@@ -25,52 +25,75 @@ pub fn p1(input_text: &str) -> Result<String> {
 
     while let Some((k1, op, k2, out)) = dq.pop_front() {
         if seen.contains_key(k1) && seen.contains_key(k2) {
-            let &v1 = seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))?;
-            let &v2 = seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))?;
+            let &v1 = seen
+                .get(k1)
+                .ok_or_else(|| anyhow::anyhow!("key not found"))?;
+            let &v2 = seen
+                .get(k2)
+                .ok_or_else(|| anyhow::anyhow!("key not found"))?;
             let result = match op {
                 "AND" => v1 && v2,
                 "OR" => v1 || v2,
                 "XOR" => v1 ^ v2,
                 _ => {
                     anyhow::bail!("unknown op");
-                },
+                }
             };
             seen.insert(out, result);
             continue;
         }
         if op == "AND" {
-            if seen.contains_key(k1) && *seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))? == false {
-                    seen.insert(out, false);
-            } else if seen.contains_key(k2) && *seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))? == false {
-                    seen.insert(out, false);
+            if seen.contains_key(k1)
+                && *seen
+                    .get(k1)
+                    .ok_or_else(|| anyhow::anyhow!("key not found"))?
+                    == false
+            {
+                seen.insert(out, false);
+            } else if seen.contains_key(k2)
+                && *seen
+                    .get(k2)
+                    .ok_or_else(|| anyhow::anyhow!("key not found"))?
+                    == false
+            {
+                seen.insert(out, false);
             } else {
                 dq.push_back((k1, op, k2, out));
             }
             continue;
         }
         if op == "OR" {
-            if seen.contains_key(k1) && *seen.get(k1).ok_or_else(|| anyhow::anyhow!("key not found"))? == true {
-                    seen.insert(out, true);
-            } else if seen.contains_key(k2) && *seen.get(k2).ok_or_else(|| anyhow::anyhow!("key not found"))? == true {
-                    seen.insert(out, true);
+            if seen.contains_key(k1)
+                && *seen
+                    .get(k1)
+                    .ok_or_else(|| anyhow::anyhow!("key not found"))?
+                    == true
+            {
+                seen.insert(out, true);
+            } else if seen.contains_key(k2)
+                && *seen
+                    .get(k2)
+                    .ok_or_else(|| anyhow::anyhow!("key not found"))?
+                    == true
+            {
+                seen.insert(out, true);
             } else {
                 dq.push_back((k1, op, k2, out));
             }
             continue;
         }
-        
+
         dq.push_back((k1, op, k2, out));
     }
 
-   
-    let mut z_keys: Vec<&str> = seen.keys()
+    let mut z_keys: Vec<&str> = seen
+        .keys()
         .filter(|&&k| k.starts_with("z"))
         .copied()
         .collect();
 
     z_keys.sort();
     z_keys.reverse();
-
 
     let mut z_values: Vec<bool> = Vec::new();
     for k in z_keys {
@@ -80,17 +103,21 @@ pub fn p1(input_text: &str) -> Result<String> {
         }
     }
 
-    let binary_str: String = z_values.iter()
+    let binary_str: String = z_values
+        .iter()
         .map(|&b| if b { '1' } else { '0' })
         .collect();
 
     let decimal = i64::from_str_radix(&binary_str, 2)?;
 
     Ok(decimal.to_string())
-
 }
 
-fn _swap_wires<'a>(rel: &mut HashMap<(&'a str, &'a str, &'a str), &'a str>, w1: &'a str, w2: &'a str) -> () {
+fn _swap_wires<'a>(
+    rel: &mut HashMap<(&'a str, &'a str, &'a str), &'a str>,
+    w1: &'a str,
+    w2: &'a str,
+) -> () {
     let mut keys_to_swap = Vec::new();
     for (&k, &v) in rel.iter() {
         if v == w1 || v == w2 {
@@ -103,12 +130,15 @@ fn _swap_wires<'a>(rel: &mut HashMap<(&'a str, &'a str, &'a str), &'a str>, w1: 
     }
 }
 
-fn _check(relations: &HashMap<(&str, &str, &str), &str>, n_bits: i64 ) -> i64 {
-    let x : Vec<String> = (0..n_bits).map(|i| format!("x{:02}", i)).collect();
-    let y : Vec<String> = (0..n_bits).map(|i| format!("y{:02}", i)).collect();
+fn _check(relations: &HashMap<(&str, &str, &str), &str>, n_bits: i64) -> i64 {
+    let x: Vec<String> = (0..n_bits).map(|i| format!("x{:02}", i)).collect();
+    let y: Vec<String> = (0..n_bits).map(|i| format!("y{:02}", i)).collect();
     let x00 = x[0].as_str();
     let y00 = y[0].as_str();
-    let z00_test = match relations.get(&(x00, "XOR", y00)).or(relations.get(&(y00, "XOR", x00))) {
+    let z00_test = match relations
+        .get(&(x00, "XOR", y00))
+        .or(relations.get(&(y00, "XOR", x00)))
+    {
         Some(&val) => val == "z00",
         None => false,
     };
@@ -116,50 +146,61 @@ fn _check(relations: &HashMap<(&str, &str, &str), &str>, n_bits: i64 ) -> i64 {
         return 0;
     }
 
-    let mut c = *relations.get(&(x00, "AND", y00)).or(relations.get(&(y00, "AND", x00))).unwrap();
+    let mut c = *relations
+        .get(&(x00, "AND", y00))
+        .or(relations.get(&(y00, "AND", x00)))
+        .unwrap();
 
-    
     for i in 1..n_bits {
-        
         let x = x[i as usize].as_str();
         let y = y[i as usize].as_str();
-        let x_and_y = *relations.get(&(x, "AND", y)).or(relations.get(&(y, "AND", x))).unwrap();
-        let x_xor_y = *relations.get(&(x, "XOR", y)).or(relations.get(&(y, "XOR", x))).unwrap();
+        let x_and_y = *relations
+            .get(&(x, "AND", y))
+            .or(relations.get(&(y, "AND", x)))
+            .unwrap();
+        let x_xor_y = *relations
+            .get(&(x, "XOR", y))
+            .or(relations.get(&(y, "XOR", x)))
+            .unwrap();
 
-
-
-        let _c_xor_x_xor_y: &str = match relations.get(&(c, "XOR", x_xor_y)).or(relations.get(&(x_xor_y, "XOR", c))) {
+        let _c_xor_x_xor_y: &str = match relations
+            .get(&(c, "XOR", x_xor_y))
+            .or(relations.get(&(x_xor_y, "XOR", c)))
+        {
             Some(&val) => {
                 if val != format!("z{:02}", i) {
                     return i;
                 }
                 val
-            },
+            }
             None => {
                 return i;
             }
         };
 
-        let c_and_x_xor_y = match relations.get(&(c, "AND", x_xor_y)).or(relations.get(&(x_xor_y, "AND", c))) {
+        let c_and_x_xor_y = match relations
+            .get(&(c, "AND", x_xor_y))
+            .or(relations.get(&(x_xor_y, "AND", c)))
+        {
             Some(&val) => val,
             None => {
                 return i;
             }
         };
 
-        c = match relations.get(&(c_and_x_xor_y, "OR", x_and_y)).or(relations.get(&(x_and_y, "OR", c_and_x_xor_y))) {
+        c = match relations
+            .get(&(c_and_x_xor_y, "OR", x_and_y))
+            .or(relations.get(&(x_and_y, "OR", c_and_x_xor_y)))
+        {
             Some(&val) => val,
             None => {
                 return i;
             }
-            
         };
-        
     }
 
     return n_bits;
 }
-
 
 pub fn p2(input_text: &str) -> Result<String> {
     let parts: Vec<&str> = input_text.split("\n\n").collect();
@@ -185,7 +226,7 @@ pub fn p2(input_text: &str) -> Result<String> {
                 }
                 let v1 = *relations.get(&k1).unwrap();
                 let v2 = *relations.get(&k2).unwrap();
-                
+
                 _swap_wires(&mut relations, v1, v2);
                 if it == 3 {
                     if v1 == "tqr" && v2 == "hth" || v1 == "hth" && v2 == "tqr" {
@@ -207,15 +248,12 @@ pub fn p2(input_text: &str) -> Result<String> {
                     break 'outer;
                 }
                 _swap_wires(&mut relations, v1, v2);
-
             }
         }
-        
     }
     wrong_wires.sort();
 
     Ok(wrong_wires.join(",").to_string())
-
 }
 
 #[cfg(test)]
@@ -283,4 +321,3 @@ tnw OR pbm -> gnj";
         assert!(result.is_ok());
     }
 }
-

@@ -1,8 +1,6 @@
 use anyhow::Result;
 use std::collections::HashMap;
 
-
-
 pub fn p1(input_text: &str) -> Result<i32> {
     let mut left = Vec::new();
     let mut right = Vec::new();
@@ -76,4 +74,3 @@ mod tests {
         assert_eq!(result, 31);
     }
 }
-

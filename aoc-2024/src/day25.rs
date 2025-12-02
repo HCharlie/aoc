@@ -19,7 +19,6 @@ fn _get_size(grids: &Vec<&str>) -> (usize, usize) {
     (m.len(), m[0].len())
 }
 
-
 pub fn p1(input_text: &str) -> Result<String> {
     let grids: Vec<&str> = input_text.split("\n\n").collect();
     let mut locks: Vec<Vec<i64>> = Vec::new();
@@ -39,7 +38,7 @@ pub fn p1(input_text: &str) -> Result<String> {
         for key in keys.iter() {
             let mut flag = true;
             for col in 0..cols {
-                if key[col] + lock[col] > rows as i64 - 2  {
+                if key[col] + lock[col] > rows as i64 - 2 {
                     flag = false;
                     break;
                 }
@@ -51,8 +50,6 @@ pub fn p1(input_text: &str) -> Result<String> {
     }
     Ok(fits.to_string())
 }
-
-
 
 pub fn p2(_input_text: &str) -> Result<String> {
     Err(anyhow::anyhow!("Not implemented"))
@@ -115,4 +112,3 @@ mod tests {
         assert!(result.is_err());
     }
 }
-

@@ -9,7 +9,7 @@ pub enum Level {
 
 impl FromStr for Level {
     type Err = anyhow::Error;
-    
+
     fn from_str(s: &str) -> Result<Self> {
         match s {
             "1" => Ok(Level::One),
@@ -18,4 +18,3 @@ impl FromStr for Level {
         }
     }
 }
-

@@ -21,7 +21,8 @@ pub fn p1(input_text: &str) -> Result<i64> {
         }
     }
 
-    let blanks: Vec<usize> = disk.iter()
+    let blanks: Vec<usize> = disk
+        .iter()
         .enumerate()
         .filter(|(_, &x)| x == -1)
         .map(|(i, _)| i)
@@ -48,7 +49,6 @@ pub fn p1(input_text: &str) -> Result<i64> {
 
     Ok(checksum)
 }
-
 
 pub fn p2(input_text: &str) -> Result<i64> {
     let mut checksum: i64 = 0;
@@ -123,4 +123,3 @@ mod tests {
         assert_eq!(result, 2858);
     }
 }
-

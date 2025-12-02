@@ -16,8 +16,10 @@ pub fn get_input_content(year: u16, day: u8) -> Result<String> {
     }
 
     if !Path::new(&file_path).exists() {
-        download_input_data(year, day, &file_path)
-            .context(format!("Failed to download input for year {} day {}", year, day))?;
+        download_input_data(year, day, &file_path).context(format!(
+            "Failed to download input for year {} day {}",
+            year, day
+        ))?;
     }
 
     let content = std::fs::read_to_string(&file_path)
@@ -25,12 +27,7 @@ pub fn get_input_content(year: u16, day: u8) -> Result<String> {
     Ok(content.trim().to_string())
 }
 
-pub fn submit_check_answer(
-    year: u16,
-    day: u8,
-    level: u8,
-    answer: &str,
-) -> Result<bool> {
+pub fn submit_check_answer(year: u16, day: u8, level: u8, answer: &str) -> Result<bool> {
     let url = format!("https://adventofcode.com/{}/day/{}/answer", year, day);
     let cookie = env::var("AOC_COOKIE").unwrap_or(get_session_token()?);
     let client = reqwest::blocking::Client::new();
@@ -44,7 +41,7 @@ pub fn submit_check_answer(
         .context("Failed to submit answer")?
         .text()
         .context("Failed to read response")?;
-    
+
     // only print the content of the main tag
     if let Some(start) = response.find("<main>") {
         if let Some(end) = response.find("</main>") {
@@ -75,15 +72,16 @@ fn download_input_data(year: u16, day: u8, file_path: &str) -> Result<()> {
     let cookie = env::var("AOC_TOKEN").unwrap_or(get_session_token()?);
 
     let client = reqwest::blocking::Client::new();
-    let response = client.get(&url)
+    let response = client
+        .get(&url)
         .header("Cookie", &cookie)
         .send()
         .context("Failed to download input data")?
         .text()
         .context("Failed to read response text")?;
-    
-    let mut file = File::create(file_path)
-        .context(format!("Failed to create file: {}", file_path))?;
+
+    let mut file =
+        File::create(file_path).context(format!("Failed to create file: {}", file_path))?;
     file.write_all(response.as_bytes())
         .context("Failed to write input data to file")?;
 

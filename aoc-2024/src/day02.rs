@@ -63,7 +63,6 @@ pub fn p2(input_text: &str) -> Result<i32> {
     Ok(counter)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;

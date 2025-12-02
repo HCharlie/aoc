@@ -1,5 +1,5 @@
 use anyhow::Result;
-use std::{collections::HashMap};
+use std::collections::HashMap;
 use std::collections::VecDeque;
 
 fn _mix(num: &i64, secret: &i64) -> i64 {
@@ -13,7 +13,6 @@ fn _prune(secret: &i64) -> i64 {
 fn _cal(num: &i64, it: &i64) -> i64 {
     let mut secret = *num;
     for _ in 0..*it {
-        
         let new = secret << 6;
         secret = _mix(&new, &secret);
         secret = _prune(&secret);
@@ -30,7 +29,8 @@ fn _cal(num: &i64, it: &i64) -> i64 {
 }
 
 pub fn p1(input_text: &str) -> Result<String> {
-    let nums = input_text.lines()
+    let nums = input_text
+        .lines()
         .map(|line| line.parse::<i64>())
         .collect::<Result<Vec<i64>, _>>()?;
 
@@ -40,18 +40,15 @@ pub fn p1(input_text: &str) -> Result<String> {
         total += _cal(&num, &it);
     }
     Ok(total.to_string())
-
 }
-
 
 fn _collect_seqs_map(num: &i64, it: &i64) -> HashMap<(i64, i64, i64, i64), i64> {
     let mut seqs_map = HashMap::new();
     let mut secret = *num;
     let mut diff: VecDeque<i64> = VecDeque::new();
-    let mut prev = secret%10;
+    let mut prev = secret % 10;
 
     for i in 0..*it {
-        
         let new = secret << 6;
         secret = _mix(&new, &secret);
         secret = _prune(&secret);
@@ -64,7 +61,7 @@ fn _collect_seqs_map(num: &i64, it: &i64) -> HashMap<(i64, i64, i64, i64), i64> 
         secret = _mix(&new, &secret);
         secret = _prune(&secret);
 
-        let curr = secret%10;
+        let curr = secret % 10;
         diff.push_back(curr - prev);
 
         if i >= 3 {
@@ -77,12 +74,11 @@ fn _collect_seqs_map(num: &i64, it: &i64) -> HashMap<(i64, i64, i64, i64), i64> 
         prev = curr;
     }
     seqs_map
-
 }
 
-
 pub fn p2(input_text: &str) -> Result<String> {
-    let nums = input_text.lines()
+    let nums = input_text
+        .lines()
         .map(|line| line.parse::<i64>())
         .collect::<Result<Vec<i64>, _>>()?;
     // println!("{:?}", nums);
@@ -92,7 +88,8 @@ pub fn p2(input_text: &str) -> Result<String> {
     for num in nums.iter() {
         let new_seqs_map = _collect_seqs_map(&num, &it);
         for (key, value) in new_seqs_map {
-            seqs_map.entry(key)
+            seqs_map
+                .entry(key)
                 .and_modify(|e| *e += value)
                 .or_insert(value);
         }
@@ -123,4 +120,3 @@ mod tests {
         assert_eq!(result, "23");
     }
 }
-

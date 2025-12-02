@@ -4,8 +4,12 @@ use std::collections::VecDeque;
 
 use ordered_float::OrderedFloat;
 
-fn _calculate_region(grid: &Vec<Vec<char>>, row: usize, col: usize, visited: &mut HashSet<(usize, usize)>) -> i64 {
- 
+fn _calculate_region(
+    grid: &Vec<Vec<char>>,
+    row: usize,
+    col: usize,
+    visited: &mut HashSet<(usize, usize)>,
+) -> i64 {
     let n_rows = grid.len();
     let n_cols = grid[0].len();
     let mut perimeter = 0;
@@ -40,7 +44,6 @@ fn _calculate_region(grid: &Vec<Vec<char>>, row: usize, col: usize, visited: &mu
     perimeter * area
 }
 
-
 pub fn p1(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let n_rows = grid.len();
@@ -50,15 +53,14 @@ pub fn p1(input_text: &str) -> Result<i64> {
 
     for row in 0..n_rows {
         for col in 0..n_cols {
-            if visited.contains(&(row, col )) {
+            if visited.contains(&(row, col)) {
                 continue;
             }
             price += _calculate_region(&grid, row, col, &mut visited);
         }
     }
-    
-    Ok(price)
 
+    Ok(price)
 }
 
 fn _calculate_score_for_region(region: &HashSet<(usize, usize)>) -> i64 {
@@ -66,9 +68,11 @@ fn _calculate_score_for_region(region: &HashSet<(usize, usize)>) -> i64 {
     calculate_total_corners(&corner_candidates, region)
 }
 
-fn collect_corner_candidates(region: &HashSet<(usize, usize)>) -> HashSet<(OrderedFloat<f64>, OrderedFloat<f64>)> {
+fn collect_corner_candidates(
+    region: &HashSet<(usize, usize)>,
+) -> HashSet<(OrderedFloat<f64>, OrderedFloat<f64>)> {
     let mut candidates = HashSet::new();
-    
+
     for &(r, c) in region {
         let corner_points = [
             (r as f64 - 0.5, c as f64 - 0.5),
@@ -76,22 +80,27 @@ fn collect_corner_candidates(region: &HashSet<(usize, usize)>) -> HashSet<(Order
             (r as f64 + 0.5, c as f64 + 0.5),
             (r as f64 - 0.5, c as f64 + 0.5),
         ];
-        candidates.extend(corner_points.iter()
-            .map(|&(cr, cc)| (OrderedFloat(cr), OrderedFloat(cc))));
+        candidates.extend(
+            corner_points
+                .iter()
+                .map(|&(cr, cc)| (OrderedFloat(cr), OrderedFloat(cc))),
+        );
     }
-    
+
     candidates
 }
 
-fn calculate_total_corners(corner_candidates: &HashSet<(OrderedFloat<f64>, OrderedFloat<f64>)>, 
-                            region: &HashSet<(usize, usize)>) -> i64 {
+fn calculate_total_corners(
+    corner_candidates: &HashSet<(OrderedFloat<f64>, OrderedFloat<f64>)>,
+    region: &HashSet<(usize, usize)>,
+) -> i64 {
     let mut total_corners = 0;
-    
+
     for &(cr, cc) in corner_candidates {
         let adjacent_cells = get_adjacent_cells_state(cr.0, cc.0, region);
         total_corners += count_corners_for_configuration(&adjacent_cells);
     }
-    
+
     total_corners
 }
 
@@ -120,7 +129,6 @@ fn count_corners_for_configuration(config: &[bool; 4]) -> i64 {
     }
 }
 
-
 pub fn p2(input_text: &str) -> Result<i64> {
     let grid: Vec<Vec<char>> = input_text.lines().map(|l| l.chars().collect()).collect();
     let rows = grid.len();
@@ -142,7 +150,12 @@ pub fn p2(input_text: &str) -> Result<i64> {
             let crop = grid[r][c];
 
             while let Some((cr, cc)) = q.pop_front() {
-                for (nr, nc) in [(cr.wrapping_sub(1), cc), (cr + 1, cc), (cr, cc.wrapping_sub(1)), (cr, cc + 1)] {
+                for (nr, nc) in [
+                    (cr.wrapping_sub(1), cc),
+                    (cr + 1, cc),
+                    (cr, cc.wrapping_sub(1)),
+                    (cr, cc + 1),
+                ] {
                     if nr >= rows || nc >= cols {
                         continue;
                     }
@@ -161,8 +174,10 @@ pub fn p2(input_text: &str) -> Result<i64> {
         }
     }
 
-
-    Ok(regions.iter().map(|region| _calculate_score_for_region(region) * region.len() as i64).sum())
+    Ok(regions
+        .iter()
+        .map(|region| _calculate_score_for_region(region) * region.len() as i64)
+        .sum())
 }
 
 #[cfg(test)]
@@ -192,4 +207,3 @@ MMMISSJEEE";
         assert_eq!(result, 1206);
     }
 }
-

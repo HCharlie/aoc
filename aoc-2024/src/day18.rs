@@ -4,7 +4,7 @@ use std::collections::{HashSet, VecDeque};
 fn parse_grid_params(input_text: &str) -> Result<((i64, i64), &str)> {
     let mut lines = input_text.lines();
     let first_line = lines.next().ok_or_else(|| anyhow::anyhow!("Empty input"))?;
-    
+
     if let Some(params) = first_line.strip_prefix("GRID: ") {
         let parts: Vec<&str> = params.split_whitespace().collect();
         if parts.len() != 2 {
@@ -13,12 +13,14 @@ fn parse_grid_params(input_text: &str) -> Result<((i64, i64), &str)> {
         let grid_size = parts[0].parse::<i64>()?;
         let bytes_falling = parts[1].parse::<i64>()?;
         let remaining = input_text.lines().skip(1).collect::<Vec<_>>().join("\n");
-        Ok(((grid_size, bytes_falling), Box::leak(remaining.into_boxed_str())))
+        Ok((
+            (grid_size, bytes_falling),
+            Box::leak(remaining.into_boxed_str()),
+        ))
     } else {
         Err(anyhow::anyhow!("Missing GRID header"))
     }
 }
-
 
 fn p1_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<String> {
     let mut grid: Vec<Vec<char>> = vec![vec!['.'; grid_size as usize]; grid_size as usize];
@@ -27,10 +29,8 @@ fn p1_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<Strin
         if cnt >= bytes_falling {
             break;
         }
-        let (row, col ) = match line.split_once(",") {
-            Some((row, col)) => {
-                (row.parse::<i64>()?, col.parse::<i64>()?)
-            }
+        let (row, col) = match line.split_once(",") {
+            Some((row, col)) => (row.parse::<i64>()?, col.parse::<i64>()?),
             None => {
                 anyhow::bail!("Invalid input");
             }
@@ -38,7 +38,6 @@ fn p1_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<Strin
 
         grid[col as usize][row as usize] = '#';
         cnt += 1;
-
     }
     let s_row = 0;
     let s_col = 0;
@@ -49,7 +48,6 @@ fn p1_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<Strin
     let mut seen = HashSet::new();
     dq.push_back((s_row, s_col, 0));
     seen.insert((s_row, s_col));
-
 
     // for line in grid.iter() {
     //     println!("{}", line.iter().collect::<String>());
@@ -66,21 +64,24 @@ fn p1_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<Strin
         if row == e_row && col == e_col {
             return Ok(dist.to_string());
         }
-        
+
         for (d_row, d_col) in vec![(0, 1), (0, -1), (1, 0), (-1, 0)] {
             let new_row = row + d_row;
             let new_col = col + d_col;
-            if new_row >= 0 && new_row < grid_size && new_col >= 0 && new_col < grid_size && grid[new_row as usize][new_col as usize] != '#' && !seen.contains(&(new_row, new_col)) {
+            if new_row >= 0
+                && new_row < grid_size
+                && new_col >= 0
+                && new_col < grid_size
+                && grid[new_row as usize][new_col as usize] != '#'
+                && !seen.contains(&(new_row, new_col))
+            {
                 dq.push_back((new_row, new_col, dist + 1));
                 seen.insert((new_row, new_col));
             }
         }
-
-
     }
     Err(anyhow::anyhow!("No path found"))
 }
-
 
 fn p2_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<String> {
     let total_lines = input_text.lines().count() as i64;
@@ -101,8 +102,11 @@ fn p2_impl(input_text: &str, grid_size: i64, bytes_falling: i64) -> Result<Strin
     }
     println!("left: {}", left);
     println!("right: {}", right);
-    
-    let line = input_text.lines().nth((left - 1) as usize).ok_or_else(|| anyhow::anyhow!("Line not found"))?;
+
+    let line = input_text
+        .lines()
+        .nth((left - 1) as usize)
+        .ok_or_else(|| anyhow::anyhow!("Line not found"))?;
     println!("line: {}", line);
     return Ok(line.to_string());
 }
@@ -161,4 +165,3 @@ mod tests {
         assert_eq!(result, "6,1");
     }
 }
-

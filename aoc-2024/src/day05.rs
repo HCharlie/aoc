@@ -10,7 +10,7 @@ fn _parse_input(input_text: &str) -> Result<(&str, &str)> {
     Ok((parts[0], parts[1]))
 }
 
-fn _build_rules(s: &str) -> Result<HashMap<i32, HashSet<i32>> , > {
+fn _build_rules(s: &str) -> Result<HashMap<i32, HashSet<i32>>> {
     let mut rules: HashMap<i32, HashSet<i32>> = HashMap::new();
     for line in s.lines() {
         let items: Vec<i32> = line
@@ -21,8 +21,10 @@ fn _build_rules(s: &str) -> Result<HashMap<i32, HashSet<i32>> , > {
             anyhow::bail!("Each line must contain exactly two numbers");
         }
         let (should_come_first, should_come_after) = (items[0], items[1]);
-        rules.entry(should_come_first as i32).or_insert(HashSet::new()).insert(should_come_after);
-
+        rules
+            .entry(should_come_first as i32)
+            .or_insert(HashSet::new())
+            .insert(should_come_after);
     }
     Ok(rules)
 }
@@ -44,7 +46,7 @@ fn _check(nums: &Vec<i32>, rules: &HashMap<i32, HashSet<i32>>) -> Result<bool> {
 }
 
 fn _get_middle(nums: &Vec<i32>) -> Result<i32> {
-    if nums.len() %2 == 0 {
+    if nums.len() % 2 == 0 {
         anyhow::bail!("The number of elements must be odd");
     }
     let middle = nums.len() / 2;
@@ -53,7 +55,6 @@ fn _get_middle(nums: &Vec<i32>) -> Result<i32> {
 }
 
 pub fn p1(input_text: &str) -> Result<i32> {
-    
     let mut ans = 0;
     let (part1, part2) = _parse_input(input_text)?;
     let rules = _build_rules(part1)?;
@@ -70,7 +71,7 @@ pub fn p1(input_text: &str) -> Result<i32> {
     Ok(ans)
 }
 
-fn _update_order(nums:&Vec<i32>, rules: &HashMap<i32, HashSet<i32>>) -> Result<Vec<i32>> {
+fn _update_order(nums: &Vec<i32>, rules: &HashMap<i32, HashSet<i32>>) -> Result<Vec<i32>> {
     let mut indegree: HashMap<i32, i32> = nums.iter().map(|&x| (x, 0)).collect();
     let mut result = Vec::new();
     let mut remaining: HashSet<i32> = nums.iter().copied().collect();
@@ -88,10 +89,13 @@ fn _update_order(nums:&Vec<i32>, rules: &HashMap<i32, HashSet<i32>>) -> Result<V
 
     // Process nodes with zero indegree
     while !remaining.is_empty() {
-        if let Some(&num) = remaining.iter().find(|&&x| indegree.get(&x).unwrap_or(&0) == &0) {
+        if let Some(&num) = remaining
+            .iter()
+            .find(|&&x| indegree.get(&x).unwrap_or(&0) == &0)
+        {
             result.push(num);
             remaining.remove(&num);
-            
+
             if let Some(dependents) = rules.get(&num) {
                 for &dep in dependents {
                     if let Some(count) = indegree.get_mut(&dep) {
@@ -170,4 +174,3 @@ mod tests {
         assert_eq!(result, 123);
     }
 }
-
