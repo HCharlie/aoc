@@ -12,6 +12,7 @@ mod day03;
 mod day04;
 mod day05;
 mod day06;
+mod day07;
 
 pub fn run_day_real(day: u8, level: Level) -> Result<String> {
     match day {
@@ -21,6 +22,7 @@ pub fn run_day_real(day: u8, level: Level) -> Result<String> {
         4 => run_real(2025, day, level, day04::p1, day04::p2),
         5 => run_real(2025, day, level, day05::p1, day05::p2),
         6 => run_real(2025, day, level, day06::p1, day06::p2),
+        7 => run_real(2025, day, level, day07::p1, day07::p2),
         _ => anyhow::bail!("Invalid day specified: {}", day),
     }
 }
