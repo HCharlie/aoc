@@ -1,9 +1,59 @@
-use std::collections::{BinaryHeap, HashSet};
+use std::collections::{BinaryHeap, HashMap};
 
 use anyhow::Result;
 
 fn squared_euclidean_distance(p1: (i64, i64, i64), p2: (i64, i64, i64)) -> i64 {
     (p1.0 - p2.0).pow(2) + (p1.1 - p2.1).pow(2) + (p1.2 - p2.2).pow(2)
+}
+
+// Union-Find data structure
+struct UnionFind {
+    parent: Vec<usize>,
+    rank: Vec<usize>,
+}
+
+impl UnionFind {
+    fn new(size: usize) -> Self {
+        UnionFind {
+            parent: (0..size).collect(),
+            rank: vec![0; size],
+        }
+    }
+
+    fn find(&mut self, x: usize) -> usize {
+        if self.parent[x] != x {
+            self.parent[x] = self.find(self.parent[x]); // path compression
+        }
+        self.parent[x]
+    }
+
+    fn union(&mut self, x: usize, y: usize) {
+        let root_x = self.find(x);
+        let root_y = self.find(y);
+
+        if root_x != root_y {
+            // Union by rank
+            if self.rank[root_x] < self.rank[root_y] {
+                self.parent[root_x] = root_y;
+            } else if self.rank[root_x] > self.rank[root_y] {
+                self.parent[root_y] = root_x;
+            } else {
+                self.parent[root_y] = root_x;
+                self.rank[root_x] += 1;
+            }
+        }
+    }
+
+    fn get_circuit_sizes(&mut self, size: usize) -> Vec<usize> {
+        let mut circuit_sizes: HashMap<usize, usize> = HashMap::new();
+        for i in 0..size {
+            let root = self.find(i);
+            *circuit_sizes.entry(root).or_insert(0) += 1;
+        }
+        let mut sizes: Vec<usize> = circuit_sizes.values().copied().collect();
+        sizes.sort_by(|a, b| b.cmp(a)); // sort descending
+        sizes
+    }
 }
 
 pub fn p1(input_text: &str) -> Result<i64> {
@@ -41,39 +91,23 @@ pub fn p1(input_text: &str) -> Result<i64> {
     }
     // println!("shortest_distances: {:?}", shortest_distances);
 
-    // connect the points with the shortest distances to form a circuit, and count the number of circuits
-    let mut connections = Vec::new();
+    // Use Union-Find to connect points and track circuits
+    let mut uf = UnionFind::new(points.len());
+    
     while !shortest_distances.is_empty() {
         let (_, i, j) = shortest_distances.pop().unwrap();
-        connections.push((i, j));
+        uf.union(i, j);
     }
-    // println!("connections: {:?}", connections);
 
-    let mut circuit_list: Vec<HashSet<i64>> = Vec::new();
-    for i in 0..connections.len() {
-        let mut found = false;
-        for circuit in &mut circuit_list {
-            if circuit.contains(&(connections[i].0 as i64)) || circuit.contains(&(connections[i].1 as i64)) {
-                circuit.insert(connections[i].0 as i64);
-                circuit.insert(connections[i].1 as i64);
-                found = true;
-                break;
-            }
-        }
-        if !found {
-            circuit_list.push(HashSet::from([connections[i].0 as i64, connections[i].1 as i64]));
-        }
-    }
-    // println!("circuit_list: {:?}", circuit_list);
-
-    circuit_list.sort_by_key(|circuit| circuit.len());
-    let largest_3_circuits = circuit_list.iter().rev().take(3).collect::<Vec<&HashSet<i64>>>();
-    let product = largest_3_circuits.iter().map(|circuit| circuit.len() as i64).product();
+    // Get circuit sizes and multiply the three largest
+    let circuit_sizes = uf.get_circuit_sizes(points.len());
+    let product: i64 = circuit_sizes.iter().take(3).map(|&size| size as i64).product();
+    
     Ok(product)
 }
 
-pub fn p2(input_text: &str) -> Result<i64> {
-    let mut total: i64 = 0;
+pub fn p2(_input_text: &str) -> Result<i64> {
+    let total: i64 = 0;
 
     Ok(total)
 }
