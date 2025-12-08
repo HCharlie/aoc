@@ -13,10 +13,10 @@ struct UnionFind {
 }
 
 impl UnionFind {
-    fn new(size: usize) -> Self {
+    fn new(n_nodes: usize) -> Self {
         UnionFind {
-            parent: (0..size).collect(),
-            rank: vec![0; size],
+            parent: (0..n_nodes).collect(),
+            rank: vec![0; n_nodes],
         }
     }
 
@@ -44,9 +44,9 @@ impl UnionFind {
         }
     }
 
-    fn get_circuit_sizes(&mut self, size: usize) -> Vec<usize> {
+    fn get_circuit_sizes(&mut self, n_nodes: usize) -> Vec<usize> {
         let mut circuit_sizes: HashMap<usize, usize> = HashMap::new();
-        for i in 0..size {
+        for i in 0..n_nodes {
             let root = self.find(i);
             *circuit_sizes.entry(root).or_insert(0) += 1;
         }
@@ -72,8 +72,8 @@ pub fn p1(input_text: &str) -> Result<i64> {
         let parts: Vec<i64> = line.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
         points.push((parts[0], parts[1], parts[2]));
     }
-    println!("connections: {}", n_connections);
-    println!("number of points: {}", points.len());
+    // println!("connections: {}", n_connections);
+    // println!("number of points: {}", points.len());
     
     let mut shortest_distances = BinaryHeap::new();
     for i in 0..points.len() {
@@ -106,10 +106,47 @@ pub fn p1(input_text: &str) -> Result<i64> {
     Ok(product)
 }
 
-pub fn p2(_input_text: &str) -> Result<i64> {
-    let total: i64 = 0;
+pub fn p2(input_text: &str) -> Result<i64> {
+    let mut points = Vec::new();
+    
+    for line in input_text.lines() {
+        if line.is_empty() {
+            continue;
+        }
+        if line.contains("NUMBERS: ") {
+            continue;
+        }
+        let parts: Vec<i64> = line.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
+        points.push((parts[0], parts[1], parts[2]));
+    }
+    println!("number of points: {}", points.len());
+    
+    let mut shortest_distances = BinaryHeap::new();
+    for i in 0..points.len() {
+        for j in i+1..points.len() {
+            let distance = squared_euclidean_distance(points[i], points[j]);
+            shortest_distances.push((-distance, i, j));
+        }
+    }
 
-    Ok(total)
+    // Use Union-Find to connect points and track circuits
+    let mut uf = UnionFind::new(points.len());
+    
+    // iterate over shortest_distances and connect points
+    // if the size of the UnionFind is the same as the number of points after joining the points, print me the last pair of points which makes the UnionFind have only one circuit
+    let mut last_pair = ((0, 0, 0), (0, 0, 0));
+    while let Some((_, i, j)) = shortest_distances.pop() {
+        // println!("joining points: {:?} and {:?}, distance: {}", points[i], points[j], distance);
+        uf.union(i, j);
+        // println!("circuit sizes: {:?}", uf.get_circuit_sizes(points.len()));
+        if uf.get_circuit_sizes(points.len()).len() == 1 {
+            last_pair = (points[i], points[j]);
+            break;
+        }
+    }
+    // print the product of x position of the last pair
+    // println!("last pair: {:?}", last_pair);
+    Ok(last_pair.0.0 * last_pair.1.0)
 }
 
 #[cfg(test)]
@@ -147,6 +184,6 @@ NUMBERS: 10";
     #[test]
     fn test_p2_example() {
         let result = p2(EXAMPLE_INPUT).unwrap();
-        assert_eq!(result, 0);
+        assert_eq!(result, 25272);
     }
 }
