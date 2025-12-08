@@ -2,14 +2,17 @@ use std::collections::{BinaryHeap, HashMap};
 
 use anyhow::Result;
 
-fn squared_euclidean_distance(p1: (i64, i64, i64), p2: (i64, i64, i64)) -> i64 {
+type Point = (i64, i64, i64);
+
+fn squared_euclidean_distance(p1: Point, p2: Point) -> i64 {
     (p1.0 - p2.0).pow(2) + (p1.1 - p2.1).pow(2) + (p1.2 - p2.2).pow(2)
 }
 
-// Union-Find data structure
+/// Union-Find data structure with path compression and union by rank
 struct UnionFind {
     parent: Vec<usize>,
     rank: Vec<usize>,
+    n_components: usize,
 }
 
 impl UnionFind {
@@ -17,6 +20,7 @@ impl UnionFind {
         UnionFind {
             parent: (0..n_nodes).collect(),
             rank: vec![0; n_nodes],
+            n_components: n_nodes,
         }
     }
 
@@ -27,125 +31,139 @@ impl UnionFind {
         self.parent[x]
     }
 
-    fn union(&mut self, x: usize, y: usize) {
+    /// Unites two components. Returns true if they were in different components.
+    fn union(&mut self, x: usize, y: usize) -> bool {
         let root_x = self.find(x);
         let root_y = self.find(y);
 
-        if root_x != root_y {
-            // Union by rank
-            if self.rank[root_x] < self.rank[root_y] {
-                self.parent[root_x] = root_y;
-            } else if self.rank[root_x] > self.rank[root_y] {
-                self.parent[root_y] = root_x;
-            } else {
-                self.parent[root_y] = root_x;
-                self.rank[root_x] += 1;
-            }
+        if root_x == root_y {
+            return false;
         }
+
+        // Union by rank
+        if self.rank[root_x] < self.rank[root_y] {
+            self.parent[root_x] = root_y;
+        } else if self.rank[root_x] > self.rank[root_y] {
+            self.parent[root_y] = root_x;
+        } else {
+            self.parent[root_y] = root_x;
+            self.rank[root_x] += 1;
+        }
+        
+        self.n_components -= 1;
+        true
     }
 
-    fn get_circuit_sizes(&mut self, n_nodes: usize) -> Vec<usize> {
-        let mut circuit_sizes: HashMap<usize, usize> = HashMap::new();
-        for i in 0..n_nodes {
+    fn component_count(&self) -> usize {
+        self.n_components
+    }
+
+    /// Returns component sizes sorted in descending order
+    fn get_component_sizes(&mut self) -> Vec<usize> {
+        let mut sizes: HashMap<usize, usize> = HashMap::new();
+        for i in 0..self.parent.len() {
             let root = self.find(i);
-            *circuit_sizes.entry(root).or_insert(0) += 1;
+            *sizes.entry(root).or_insert(0) += 1;
         }
-        let mut sizes: Vec<usize> = circuit_sizes.values().copied().collect();
-        sizes.sort_by(|a, b| b.cmp(a)); // sort descending
-        sizes
+        let mut result: Vec<usize> = sizes.values().copied().collect();
+        result.sort_unstable_by(|a, b| b.cmp(a));
+        result
     }
 }
 
-pub fn p1(input_text: &str) -> Result<i64> {
+/// Parse input into points and optionally extract n_connections
+fn parse_input(input_text: &str, extract_n_connections: bool) -> (Vec<Point>, Option<usize>) {
     let mut points = Vec::new();
-    let mut n_connections = 0;
+    let mut n_connections = None;
 
-    
     for line in input_text.lines() {
         if line.is_empty() {
             continue;
         }
         if line.contains("NUMBERS: ") {
-            n_connections = line.split(' ').nth(1).unwrap().parse::<i64>().unwrap();
+            if extract_n_connections {
+                n_connections = line
+                    .split_whitespace()
+                    .nth(1)
+                    .and_then(|s| s.parse::<usize>().ok());
+            }
             continue;
         }
-        let parts: Vec<i64> = line.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
-        points.push((parts[0], parts[1], parts[2]));
+        let parts: Vec<i64> = line
+            .split(',')
+            .filter_map(|x| x.parse::<i64>().ok())
+            .collect();
+        if parts.len() == 3 {
+            points.push((parts[0], parts[1], parts[2]));
+        }
     }
-    // println!("connections: {}", n_connections);
-    // println!("number of points: {}", points.len());
+
+    (points, n_connections)
+}
+
+pub fn p1(input_text: &str) -> Result<i64> {
+    let (points, n_connections) = parse_input(input_text, true);
+    let n_connections = n_connections.unwrap_or(0);
+
+    // Use a max heap to efficiently track the k smallest distances
+    // (max heap because we want to remove the largest when we exceed k)
+    let mut max_heap = BinaryHeap::new();
     
-    let mut shortest_distances = BinaryHeap::new();
     for i in 0..points.len() {
-        for j in i+1..points.len() {
+        for j in (i + 1)..points.len() {
             let distance = squared_euclidean_distance(points[i], points[j]);
-            if shortest_distances.len() < n_connections as usize {
-                shortest_distances.push((distance, i, j));
-            } else {
-                if distance < shortest_distances.peek().unwrap().0 {
-                    shortest_distances.pop();
-                    shortest_distances.push((distance, i, j));
+            
+            if max_heap.len() < n_connections {
+                max_heap.push((distance, i, j));
+            } else if let Some(&(max_dist, _, _)) = max_heap.peek() {
+                if distance < max_dist {
+                    max_heap.pop();
+                    max_heap.push((distance, i, j));
                 }
             }
         }
     }
-    // println!("shortest_distances: {:?}", shortest_distances);
 
-    // Use Union-Find to connect points and track circuits
+    // Connect points using Union-Find
     let mut uf = UnionFind::new(points.len());
-    
-    while !shortest_distances.is_empty() {
-        let (_, i, j) = shortest_distances.pop().unwrap();
+    while let Some((_, i, j)) = max_heap.pop() {
         uf.union(i, j);
     }
 
-    // Get circuit sizes and multiply the three largest
-    let circuit_sizes = uf.get_circuit_sizes(points.len());
-    let product: i64 = circuit_sizes.iter().take(3).map(|&size| size as i64).product();
+    // Multiply the three largest component sizes
+    let component_sizes = uf.get_component_sizes();
+    let product: i64 = component_sizes
+        .iter()
+        .take(3)
+        .map(|&size| size as i64)
+        .product();
     
     Ok(product)
 }
 
 pub fn p2(input_text: &str) -> Result<i64> {
-    let mut points = Vec::new();
-    
-    for line in input_text.lines() {
-        if line.is_empty() {
-            continue;
-        }
-        if line.contains("NUMBERS: ") {
-            continue;
-        }
-        let parts: Vec<i64> = line.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
-        points.push((parts[0], parts[1], parts[2]));
-    }
-    println!("number of points: {}", points.len());
-    
-    let mut shortest_distances = BinaryHeap::new();
+    let (points, _) = parse_input(input_text, false);
+
+    // Build min heap of all pairwise distances (using negative distances for max heap)
+    let mut min_heap = BinaryHeap::new();
     for i in 0..points.len() {
-        for j in i+1..points.len() {
+        for j in (i + 1)..points.len() {
             let distance = squared_euclidean_distance(points[i], points[j]);
-            shortest_distances.push((-distance, i, j));
+            min_heap.push((-distance, i, j)); // Negative for min heap behavior
         }
     }
 
-    // Use Union-Find to connect points and track circuits
+    // Connect points in order of increasing distance until all points are in one component
     let mut uf = UnionFind::new(points.len());
+    let mut last_pair = (Point::default(), Point::default());
     
-    // iterate over shortest_distances and connect points
-    // if the size of the UnionFind is the same as the number of points after joining the points, print me the last pair of points which makes the UnionFind have only one circuit
-    let mut last_pair = ((0, 0, 0), (0, 0, 0));
-    while let Some((_, i, j)) = shortest_distances.pop() {
-        // println!("joining points: {:?} and {:?}, distance: {}", points[i], points[j], distance);
-        uf.union(i, j);
-        // println!("circuit sizes: {:?}", uf.get_circuit_sizes(points.len()));
-        if uf.get_circuit_sizes(points.len()).len() == 1 {
+    while let Some((_, i, j)) = min_heap.pop() {
+        if uf.union(i, j) && uf.component_count() == 1 {
             last_pair = (points[i], points[j]);
             break;
         }
     }
-    // print the product of x position of the last pair
-    // println!("last pair: {:?}", last_pair);
+
     Ok(last_pair.0.0 * last_pair.1.0)
 }
 
