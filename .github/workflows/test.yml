@@ -11,7 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Install Z3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libz3-dev
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo test --workspace
+      - name: Run tests
+        env:
+          Z3_SYS_Z3_HEADER: /usr/include/z3.h
+        run: cargo test --workspace
 
