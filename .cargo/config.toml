@@ -1,0 +1,20 @@
+# Cargo configuration for Z3 integration
+
+[env]
+# Set Z3 header location for z3-sys crate
+# This works for Apple Silicon Macs (most common development environment)
+# For other platforms, override with: export Z3_SYS_Z3_HEADER=/path/to/z3.h
+Z3_SYS_Z3_HEADER = "/opt/homebrew/opt/z3/include/z3.h"
+
+[target.aarch64-apple-darwin]
+# Add Z3 library path for linking on Apple Silicon (M1/M2/M3)
+rustflags = ["-L", "/opt/homebrew/opt/z3/lib"]
+
+[target.x86_64-unknown-linux-gnu]
+# Linux usually has Z3 in system paths, but we can add common locations
+rustflags = ["-L", "/usr/lib", "-L", "/usr/lib/x86_64-linux-gnu"]
+
+[target.aarch64-unknown-linux-gnu]
+# ARM64 Linux (e.g., ARM-based GitHub runners, if used)
+rustflags = ["-L", "/usr/lib", "-L", "/usr/lib/aarch64-linux-gnu"]
+
