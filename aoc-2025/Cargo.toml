@@ -10,3 +10,4 @@ path = "src/lib.rs"
 [dependencies]
 aoc-common = { path = "../aoc-common" }
 anyhow.workspace = true
+z3 = "0.19.6"
