@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 12: Interactive Backtracking</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --grid-bg: #1e293b;
+            --panel-bg: #334155;
+            --text-color: #94a3b8;
+            --cell-empty: #0f172a;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            gap: 40px;
+        }
+
+        /* Layout */
+        #main-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #info-column {
+            width: 250px;
+            background: var(--grid-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border: 1px solid #475569;
+        }
+
+        h1 {
+            color: #f8fafc;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            margin-top: 0;
+            border-bottom: 1px solid #475569;
+            padding-bottom: 10px;
+        }
+
+        #controls {
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            min-width: 70px;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        button.btn-step {
+            background-color: var(--warning);
+            color: #1e293b;
+        }
+
+        button.btn-stop {
+            background-color: var(--danger);
+        }
+
+        button.btn-reset {
+            background-color: #64748b;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(110%);
+        }
+
+        #speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 10px;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        #grid-container {
+            display: grid;
+            gap: 4px;
+            background-color: var(--grid-bg);
+            padding: 10px;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            background-color: var(--cell-empty);
+            border-radius: 6px;
+            transition: background-color 0s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #status-bar {
+            margin-top: 20px;
+            font-family: monospace;
+            background: #1e293b;
+            padding: 10px 20px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent);
+            width: 100%;
+            box-sizing: border-box;
+            color: #e2e8f0;
+        }
+
+        /* Shape List Styles */
+        .shape-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .shape-preview {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 4px;
+            display: grid;
+            /* Grid layout will be set by JS */
+            gap: 1px;
+            padding: 2px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .preview-cell {
+            background-color: transparent;
+            border-radius: 2px;
+        }
+
+        .preview-filled {
+            opacity: 1;
+        }
+
+        .shape-info {
+            flex: 1;
+        }
+
+        .shape-count {
+            font-weight: bold;
+            color: white;
+            float: right;
+        }
+
+        /* Shape Colors */
+        .s-0 {
+            background-color: #f87171;
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.4);
+        }
+
+        .s-2 {
+            background-color: #60a5fa;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+        }
+
+        .s-4 {
+            background-color: #fbbf24;
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
+        }
+
+        .s-5 {
+            background-color: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+        }
+
+        .ghost {
+            opacity: 0.3;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            background-color: transparent !important;
+            box-shadow: none;
+        }
+
+        .collision {
+            background-color: #ef4444 !important;
+            border: 2px solid white;
+            animation: shake 0.3s;
+            z-index: 10;
+            position: relative;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        .cursor {
+            border: 2px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            z-index: 5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="info-column">
+        <h2>Problem Details</h2>
+        <div style="margin-bottom: 20px;">
+            <div style="margin-bottom: 5px;"><strong>Region Size:</strong></div>
+            <div style="font-family: monospace; font-size: 1.2rem; color: #fff;">12 x 5</div>
+        </div>
+
+        <h2>Available Shapes</h2>
+        <div id="shape-list">
+            <!-- Populated by JS -->
+        </div>
+
+        <div style="margin-top: 30px; font-size: 0.8rem; line-height: 1.4;">
+            <strong>Legend:</strong><br>
+            <span style="color: #fff">White Border</span>: Current Cursor<br>
+            <span style="color: rgba(255,255,255,0.5); border: 1px dashed #fff;">Dashed</span>: Ghost Attempt<br>
+            <span style="color: #ef4444">Red Flash</span>: Collision
+        </div>
+    </div>
+
+    <div id="main-column">
+        <h1>🧩 Backtracking Visualizer</h1>
+
+        <div id="controls">
+            <button id="btn-play" onclick="setMode('play')">▶ Play</button>
+            <button id="btn-step" class="btn-step" onclick="stepOnce()">Step</button>
+            <button id="btn-pause" class="btn-stop" onclick="setMode('pause')" disabled>⏸ Pause</button>
+            <button id="btn-reset" class="btn-reset" onclick="resetSolver()">↺ Reset</button>
+
+            <div id="speed-control">
+                <label>Speed:</label>
+                <input type="range" id="speed" min="1" max="100" value="70">
+            </div>
+        </div>
+
+        <div id="grid-container"></div>
+        <div id="status-bar">Waiting to start...</div>
+    </div>
+
+    <script>
+        // --- Data ---
+        const WIDTH = 12, HEIGHT = 5;
+
+        const SHAPE_0_POINTS = [{ r: 0, c: 0 }, { r: 0, c: 1 }, { r: 0, c: 2 }, { r: 1, c: 0 }, { r: 1, c: 1 }, { r: 2, c: 0 }, { r: 2, c: 1 }];
+        const SHAPE_2_POINTS = [{ r: 0, c: 1 }, { r: 0, c: 2 }, { r: 1, c: 0 }, { r: 1, c: 1 }, { r: 1, c: 2 }, { r: 2, c: 0 }, { r: 2, c: 1 }];
+        const SHAPE_4_POINTS = [{ r: 0, c: 0 }, { r: 0, c: 1 }, { r: 0, c: 2 }, { r: 1, c: 0 }, { r: 2, c: 0 }, { r: 2, c: 1 }, { r: 2, c: 2 }];
+        const SHAPE_5_POINTS = [{ r: 0, c: 0 }, { r: 0, c: 1 }, { r: 0, c: 2 }, { r: 1, c: 1 }, { r: 2, c: 0 }, { r: 2, c: 1 }, { r: 2, c: 2 }];
+
+        // --- Logic ---
+        class Shape {
+            constructor(id, points) { this.id = id; this.points = points; this.normalize(); }
+            normalize() {
+                if (!this.points.length) return;
+                const minR = Math.min(...this.points.map(p => p.r));
+                const minC = Math.min(...this.points.map(p => p.c));
+                this.points = this.points.map(p => ({ r: p.r - minR, c: p.c - minC }));
+                this.points.sort((a, b) => a.r - b.r || a.c - b.c);
+            }
+            rotate() { return new Shape(this.id, this.points.map(p => ({ r: p.c, c: -p.r }))); }
+            flip() { return new Shape(this.id, this.points.map(p => ({ r: p.r, c: -p.c }))); }
+            hash() { return JSON.stringify(this.points); }
+            variations() {
+                let vars = [], seen = new Set(), curr = this;
+                for (let i = 0; i < 4; i++) {
+                    if (!seen.has(curr.hash())) { seen.add(curr.hash()); vars.push(curr); }
+                    let f = curr.flip();
+                    if (!seen.has(f.hash())) { seen.add(f.hash()); vars.push(f); }
+                    curr = curr.rotate();
+                }
+                return vars;
+            }
+
+            getDims() {
+                const maxR = Math.max(...this.points.map(p => p.r));
+                const maxC = Math.max(...this.points.map(p => p.c));
+                return { w: maxC + 1, h: maxR + 1 };
+            }
+        }
+
+        const RAW_PIECES = [
+            new Shape(0, SHAPE_0_POINTS),
+            new Shape(2, SHAPE_2_POINTS),
+            new Shape(4, SHAPE_4_POINTS),
+            new Shape(4, SHAPE_4_POINTS),
+            new Shape(5, SHAPE_5_POINTS),
+            new Shape(5, SHAPE_5_POINTS)
+        ];
+        RAW_PIECES.sort((a, b) => a.id - b.id);
+
+        // Generate Sidebar List
+        const uniqueIDs = [...new Set(RAW_PIECES.map(p => p.id))];
+        const shapeListEl = document.getElementById('shape-list');
+
+        uniqueIDs.forEach(id => {
+            const shape = RAW_PIECES.find(p => p.id === id);
+            const count = RAW_PIECES.filter(p => p.id === id).length;
+            const dims = shape.getDims();
+
+            const item = document.createElement('div');
+            item.className = 'shape-item';
+
+            const preview = document.createElement('div');
+            preview.className = `shape-preview`;
+            // Build mini grid
+            preview.style.gridTemplateColumns = `repeat(${dims.w}, 1fr)`;
+            preview.style.gridTemplateRows = `repeat(${dims.h}, 1fr)`;
+
+            // Fill grid
+            for (let r = 0; r < dims.h; r++) {
+                for (let c = 0; c < dims.w; c++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'preview-cell';
+                    let hasPoint = shape.points.some(p => p.r === r && p.c === c);
+                    if (hasPoint) {
+                        cell.classList.add(`s-${id}`, 'preview-filled');
+                    }
+                    preview.appendChild(cell);
+                }
+            }
+
+            item.innerHTML = `
+            <div class="shape-info">ID ${id}</div>
+            <div class="shape-count">x${count}</div>
+        `;
+            item.prepend(preview);
+            shapeListEl.appendChild(item);
+        });
+
+        const VARIATIONS_MAP = {};
+        [0, 2, 4, 5].forEach(id => {
+            let base = RAW_PIECES.find(p => p.id === id);
+            VARIATIONS_MAP[id] = base.variations();
+        });
+
+        let isRunning = false;
+        let mode = 'pause';
+        let stepResolve = null;
+
+        const container = document.getElementById('grid-container');
+        container.style.gridTemplateColumns = `repeat(${WIDTH}, 40px)`;
+        container.style.gridTemplateRows = `repeat(${HEIGHT}, 40px)`;
+
+        let domCells = [];
+        let gridState = Array(WIDTH * HEIGHT).fill(-1);
+
+        function initGrid() {
+            container.innerHTML = '';
+            domCells = [];
+            for (let r = 0; r < HEIGHT; r++) {
+                for (let c = 0; c < WIDTH; c++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.innerText = '';
+                    container.appendChild(cell);
+                    domCells.push(cell);
+                }
+            }
+            gridState.fill(-1);
+        }
+        initGrid();
+
+        function setStatus(text) { document.getElementById('status-bar').innerText = text; }
+
+        function setMode(newMode) {
+            mode = newMode;
+            if (mode === 'play') {
+                document.getElementById('btn-play').disabled = true;
+                document.getElementById('btn-pause').disabled = false;
+                document.getElementById('btn-step').disabled = true;
+                if (stepResolve) { stepResolve(); stepResolve = null; }
+                if (!isRunning) { startSolver(); }
+            } else if (mode === 'pause') {
+                document.getElementById('btn-play').disabled = false;
+                document.getElementById('btn-pause').disabled = true;
+                document.getElementById('btn-step').disabled = false;
+            }
+        }
+
+        function stepOnce() {
+            if (isRunning && stepResolve) {
+                stepResolve();
+                stepResolve = null;
+            } else if (!isRunning) {
+                mode = 'step';
+                document.getElementById('btn-play').disabled = false;
+                document.getElementById('btn-pause').disabled = true;
+                startSolver();
+            }
+        }
+
+        function resetSolver() { location.reload(); }
+
+        async function sync() {
+            if (mode === 'step') {
+                setStatus("Paused (Step Mode). Click Step to continue.");
+                await new Promise(r => stepResolve = r);
+                return;
+            }
+            if (mode === 'pause') {
+                setStatus("Paused. Click Play or Step.");
+                await new Promise(r => stepResolve = r);
+            }
+            if (mode === 'play') {
+                let speed = document.getElementById('speed').value;
+                let delay = (100 - speed) * 5;
+                await new Promise(r => setTimeout(r, delay));
+            }
+        }
+
+        function redrawCell(idx) {
+            let cell = domCells[idx];
+            let id = gridState[idx];
+            if (id === -1) {
+                cell.className = 'cell';
+            } else {
+                cell.className = `cell s-${id}`;
+            }
+        }
+
+        function drawShape(r, c, shape, type) {
+            let cls = `s-${shape.id}`;
+            let extra = '';
+            if (type === 'ghost') extra = 'ghost';
+            if (type === 'collision') extra = 'collision';
+
+            for (let p of shape.points) {
+                let idx = (r + p.r) * WIDTH + (c + p.c);
+                if (idx >= 0 && idx < domCells.length) {
+                    let cell = domCells[idx];
+                    if (type === 'collision') {
+                        cell.classList.add('collision');
+                    } else {
+                        cell.className = `cell ${cls} ${extra}`;
+                    }
+                }
+            }
+        }
+
+        function clearShape(r, c, shape, type) {
+            for (let p of shape.points) {
+                let idx = (r + p.r) * WIDTH + (c + p.c);
+                if (idx >= 0 && idx < domCells.length) {
+                    if (type === 'collision') {
+                        domCells[idx].classList.remove('collision');
+                    }
+                }
+            }
+        }
+
+        async function startSolver() {
+            if (isRunning) return;
+            isRunning = true;
+            try {
+                let success = await backtrack(0, -1);
+                if (success) setStatus("SOLVED! 🎉");
+                else setStatus("No Solution Found 😞");
+            } catch (e) {
+                console.error(e);
+            }
+            isRunning = false;
+            setMode('pause');
+        }
+
+        async function backtrack(idx, lastPos) {
+            if (idx >= RAW_PIECES.length) return true;
+
+            const piece = RAW_PIECES[idx];
+            const variations = VARIATIONS_MAP[piece.id];
+
+            let start = 0;
+            if (idx > 0 && RAW_PIECES[idx].id === RAW_PIECES[idx - 1].id) {
+                start = lastPos;
+            }
+
+            for (let pos = start; pos < WIDTH * HEIGHT; pos++) {
+                let r = Math.floor(pos / WIDTH);
+                let c = pos % WIDTH;
+
+                if (domCells[pos]) domCells[pos].classList.add('cursor');
+
+                for (let varIdx = 0; varIdx < variations.length; varIdx++) {
+                    let v = variations[varIdx];
+
+                    let can = true;
+                    let collisionCells = [];
+                    for (let p of v.points) {
+                        let nr = r + p.r;
+                        let nc = c + p.c;
+                        let nidx = nr * WIDTH + nc;
+
+                        if (nr < 0 || nr >= HEIGHT || nc < 0 || nc >= WIDTH) {
+                            can = false;
+                        } else if (gridState[nidx] !== -1) {
+                            can = false;
+                            collisionCells.push(nidx);
+                        }
+                    }
+
+                    if (can) {
+                        drawShape(r, c, v, 'ghost');
+                        setStatus(`Trying Piece ${idx} (ID:${piece.id}) at (${r},${c})...`);
+                        await sync();
+
+                        // Commit
+                        updateGridState(v, r, c, piece.id);
+                        drawShape(r, c, v, 'place');
+                        setStatus(`Placed Piece ${idx} (ID:${piece.id})`);
+                        if (domCells[pos]) domCells[pos].classList.remove('cursor');
+                        await sync(); // Pause to show placement
+
+                        if (await backtrack(idx + 1, pos)) return true;
+
+                        // Backtrack
+                        setStatus(`Backtracking Piece ${idx}...`);
+                        if (domCells[pos]) domCells[pos].classList.add('cursor');
+
+                        updateGridState(v, r, c, -1);
+                        for (let p of v.points) { redrawCell((r + p.r) * WIDTH + (c + p.c)); }
+                        await sync();
+
+                    } else {
+                        // Collision
+                        drawShape(r, c, v, 'collision');
+                        setStatus(`Piece ${idx} (ID:${piece.id}) at (${r},${c})? Collides!`);
+                        await sync();
+
+                        clearShape(r, c, v, 'collision');
+                        for (let p of v.points) {
+                            let _idx = (r + p.r) * WIDTH + (c + p.c);
+                            if (_idx >= 0 && _idx < WIDTH * HEIGHT) redrawCell(_idx);
+                        }
+                    }
+                }
+                if (domCells[pos]) domCells[pos].classList.remove('cursor');
+            }
+            return false;
+        }
+
+        function updateGridState(shape, r, c, val) {
+            for (let p of shape.points) {
+                let nr = r + p.r;
+                let nc = c + p.c;
+                gridState[nr * WIDTH + nc] = val;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
