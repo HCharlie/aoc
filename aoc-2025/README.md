@@ -73,3 +73,19 @@ cargo run
 cargo build --release
 ```
 
+
+## Visualization
+
+An interactive visualization for Day 12's backtracking solver is included in `visualization.html`.
+
+### How to use
+
+1.  Open `visualization.html` in your web browser:
+    ```bash
+    open visualization.html
+    ```
+2.  Controls:
+    -   **Play**: Start the solver automatically.
+    -   **Step**: Advance one step at a time.
+    -   **Speed**: Adjust playback speed.
+    -   **Reset**: Restart the simulation.
