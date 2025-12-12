@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use std::collections::{HashSet, VecDeque, HashMap};
+use std::collections::{HashSet, HashMap};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 struct Point {
@@ -90,75 +90,60 @@ struct Region {
 }
 
 fn parse_input(input: &str) -> Result<Problem> {
-    let mut lines: VecDeque<&str> = input.lines().collect();
     let mut shapes = Vec::new();
+    let mut regions = Vec::new();
 
-    loop {
-        while let Some(line) = lines.front() {
-            if line.trim().is_empty() {
-                lines.pop_front();
-            } else {
-                break;
-            }
-        }
-        if lines.is_empty() { break; }
+    for chunk in input.split("\n\n") {
+        let chunk = chunk.trim();
+        if chunk.is_empty() { continue; }
+
+        let first_line = chunk.lines().next().unwrap_or("");
         
-        let header = lines.front().unwrap();
-        if header.contains(':') && !header.contains('x') { 
-            let header = lines.pop_front().unwrap();
-            let id_str = header.trim_end_matches(':');
-            let id: usize = id_str.parse().map_err(|_| anyhow!("Failed to parse shape ID: {}", header))?;
-            
-            let mut points = Vec::new();
-            let mut r = 0;
-            while let Some(shape_line) = lines.front() {
-                if shape_line.trim().is_empty() { break; }
-                if shape_line.contains(':') && !shape_line.contains('x') { break; }
-                if shape_line.contains('x') && shape_line.contains(':') { break; }
+        if first_line.contains('x') {
+            // Regions block
+            for line in chunk.lines() {
+                let line = line.trim();
+                if line.is_empty() { continue; }
                 
-                for (c, ch) in shape_line.chars().enumerate() {
-                    if ch == '#' {
-                        points.push(Point { r, c: c as i32 });
+                let (dims, counts_str) = line.split_once(": ").ok_or(anyhow!("Invalid region line"))?;
+                let (w_str, h_str) = dims.split_once('x').ok_or(anyhow!("Invalid dims"))?;
+                let width: i32 = w_str.parse()?;
+                let height: i32 = h_str.parse()?;
+
+                let counts: Vec<usize> = counts_str
+                    .split_whitespace()
+                    .map(|s| s.parse().unwrap())
+                    .collect();
+
+                let mut to_fit = Vec::new();
+                for (shape_idx, &count) in counts.iter().enumerate() {
+                    for _ in 0..count {
+                        to_fit.push(shape_idx);
                     }
                 }
-                r += 1;
-                lines.pop_front();
+                regions.push(Region { width, height, to_fit, original_line: line.to_string() });
+            }
+        } else {
+            // Shape block
+            let mut lines = chunk.lines();
+            let header = lines.next().unwrap();
+            let id = header.trim_end_matches(':').parse()?;
+            
+            let mut points = Vec::new();
+            for (r, line) in lines.enumerate() {
+                for (c, ch) in line.chars().enumerate() {
+                    if ch == '#' {
+                        points.push(Point { r: r as i32, c: c as i32 });
+                    }
+                }
             }
             let mut s = Shape { id, points };
             s.normalize();
             shapes.push(s);
-        } else {
-            break;
         }
     }
     
     shapes.sort_by_key(|s| s.id);
-
-    let mut regions = Vec::new();
-    while let Some(line) = lines.pop_front() {
-        if line.trim().is_empty() { continue; }
-        
-        let parts_line: Vec<&str> = line.split(": ").collect();
-        if parts_line.len() < 2 { continue; }
-        
-        let dims: Vec<&str> = parts_line[0].split('x').collect();
-        let width: i32 = dims[0].parse()?;
-        let height: i32 = dims[1].parse()?;
-        
-        let counts: Vec<usize> = parts_line[1]
-            .split_whitespace()
-            .map(|s| s.parse().unwrap())
-            .collect();
-            
-        let mut to_fit = Vec::new();
-        for (shape_idx, &count) in counts.iter().enumerate() {
-            for _ in 0..count {
-                to_fit.push(shape_idx);
-            }
-        }
-        
-        regions.push(Region { width, height, to_fit, original_line: line.to_string() });
-    }
 
     Ok(Problem { shapes, regions })
 }
@@ -270,6 +255,10 @@ pub fn p1(input_text: &str) -> Result<i64> {
     }
     
     Ok(solved_count)
+}
+
+pub fn p2(_input_text: &str) -> Result<i64> {
+    Ok(0)
 }
 
 #[cfg(test)]
