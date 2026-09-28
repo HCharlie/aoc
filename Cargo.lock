@@ -1206,7 +1206,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.1",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -1482,7 +1482,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -2061,7 +2061,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.60.2",
 ]
 
 [[package]]
@@ -2365,9 +2365,9 @@ dependencies = [
 
 [[package]]
 name = "z3"
-version = "0.21.0"
+version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08975512fd325de2a15eede8ed293b2189c745e0770886fae2b30ae229c5b886"
+checksum = "83c8c28827f094697c982c88a730ef2511b5cb551f86f532a0bba2723178a37a"
 dependencies = [
  "log",
  "z3-sys",
@@ -2375,9 +2375,9 @@ dependencies = [
 
 [[package]]
 name = "z3-sys"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96975839f50a909f6ec19671e5c06d7f0d6fc67287a120e1b010c5f8d91944d6"
+checksum = "1343ed2cd33696498898195eb63613ef7891d9353bbc33ddc87d0292c6e3b1e6"
 dependencies = [
  "pkg-config",
 ]
